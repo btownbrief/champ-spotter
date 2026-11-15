@@ -27,17 +27,19 @@
   const RARE_MULT = { baby: 1.5, breach: 1.25, sail: 1.4 };
   const PEAK_U = { neck: 0.5, baby: 0.25, humps: 0.38, sail: 0.38, tail: 0.71, breach: 0.5 }; // tail: the held pose after the flick, not the blurry flick itself
   const GLINT_LEAD = 0.26;
+  const CHAMP_K = 1.28; // Champ's on-screen size (frame F grows with it, so framing is no harder)
+  const DIVE_T = 0.28; // after a 4★+ photo he dives this fast, so the next sighting comes sooner
   const DRIFT = { neck: 7, baby: 9, humps: 15, sail: 0, tail: 0, breach: 0 }; // px/s at depth 1: lead the shot on swimmers // the sparkle starts this long before the peak and is brightest at it
 
   const ROUNDS = [
-    { name: 'Morning Calm', light: 'morning', film: 8, n: 5, gap: [2.0, 3.2], spd: 1.0, warn: 1.05, decoy: [6, 9], dk: { duck: 3, log: 2, loon: 2 }, kinds: { neck: 3, humps: 2, tail: 1 }, fog: 0, chop: 0.05, target: 220, fixed: ['neck', 'humps', 'neck', 'tail', 'humps'], blurb: 'Calm water. Easy light.' },
-    { name: 'Fudge Break', light: 'noon', film: 8, n: 6, gap: [1.8, 3.0], spd: 1.1, warn: 1.0, decoy: [4.5, 7], dk: { duck: 2, log: 2, loon: 2, swimmer: 2 }, kinds: { neck: 3, humps: 3, tail: 2 }, lm: ['light'], fog: 0, chop: 0.1, target: 320, blurb: 'More swimmers. Fewer secrets.' },
-    { name: 'Kayak Parade', light: 'noon', film: 9, n: 7, gap: [1.7, 2.8], spd: 1.18, warn: 0.95, decoy: [3.5, 6], dk: { duck: 1, log: 2, loon: 2, swimmer: 2, kayak: 3 }, kinds: { neck: 3, humps: 3, tail: 2 }, breach: 1, bomb: 1, fog: 0, chop: 0.35, target: 400, blurb: 'Paddlers everywhere. One big splash.' },
-    { name: 'Pea Soup', light: 'overcast', film: 9, n: 7, gap: [1.7, 2.8], spd: 1.22, warn: 0.95, decoy: [3.5, 6], dk: { duck: 1, log: 3, loon: 3, swimmer: 1, kayak: 2 }, kinds: { neck: 3, humps: 3, tail: 2 }, baby: 1, fog: 0.62, chop: 0.15, target: 420, blurb: 'Fog rolls in. A tiny visitor, maybe.' },
-    { name: 'Golden Hour', light: 'golden', film: 10, n: 8, gap: [1.5, 2.6], spd: 1.32, warn: 0.9, decoy: [3, 5.5], dk: { duck: 2, log: 2, loon: 2, swimmer: 2, kayak: 2, wave: 1 }, kinds: { neck: 3, humps: 3, tail: 2 }, breach: 1, sail: 1, lm: ['ferry'], fog: 0, chop: 0.25, shy: 0.2, target: 540, blurb: 'Warm light. A sailboat drifts by.' },
-    { name: 'Nor’easter Chop', light: 'overcast', film: 10, n: 8, gap: [1.5, 2.6], spd: 1.42, warn: 0.85, decoy: [2.8, 5], dk: { duck: 1, log: 2, loon: 2, swimmer: 1, kayak: 1, wave: 5 }, kinds: { neck: 3, humps: 3, tail: 3 }, breach: 1, bomb: 2, fog: 0.1, chop: 1, shy: 0.25, mimic: [9, 14], target: 600, blurb: 'Whitecaps everywhere. Not all humps are Champ.' },
-    { name: 'Foggy Dusk', light: 'dusk', film: 11, n: 9, gap: [1.4, 2.4], spd: 1.52, warn: 0.8, decoy: [2.8, 5], dk: { duck: 1, log: 3, loon: 3, swimmer: 1, kayak: 1, wave: 2 }, kinds: { neck: 3, humps: 3, tail: 3 }, breach: 1, baby: 1, sail: 1, lm: ['light'], fog: 0.5, chop: 0.3, shy: 0.3, mimic: [8, 12], target: 660, blurb: 'Pink sky, grey mist.' },
-    { name: 'Moonlit Champ', light: 'night', film: 12, n: 10, gap: [1.3, 2.3], spd: 1.65, warn: 0.75, decoy: [2.5, 4.5], dk: { duck: 1, log: 3, loon: 3, swimmer: 1, kayak: 1, wave: 3 }, kinds: { neck: 3, humps: 3, tail: 3 }, breach: 2, baby: 1, sail: 1, bomb: 1, fog: 0.25, chop: 0.35, shy: 0.35, mimic: [7, 11], target: 740, blurb: 'The big night. Make it count.' },
+    { name: 'Morning Calm', light: 'morning', film: 11, n: 8, gap: [0.9, 1.5], spd: 1.0, warn: 1.05, decoy: [6, 9], dk: { duck: 3, log: 2, loon: 2 }, kinds: { neck: 3, humps: 2, tail: 1 }, fog: 0, chop: 0.05, target: 450, fixed: ['neck', 'humps', 'neck', 'tail', 'humps', 'neck', 'humps', 'tail'], blurb: 'Calm water. Easy light.' },
+    { name: 'Fudge Break', light: 'noon', film: 12, n: 10, gap: [0.8, 1.4], spd: 1.1, warn: 1.0, decoy: [4.5, 7], dk: { duck: 2, log: 2, loon: 2, swimmer: 2 }, kinds: { neck: 3, humps: 3, tail: 2 }, lm: ['light'], fog: 0, chop: 0.1, target: 1000, blurb: 'More swimmers. Fewer secrets.' },
+    { name: 'Kayak Parade', light: 'noon', film: 14, n: 12, gap: [0.7, 1.2], spd: 1.18, warn: 0.95, decoy: [3.5, 6], dk: { duck: 1, log: 2, loon: 2, swimmer: 2, kayak: 3 }, kinds: { neck: 3, humps: 3, tail: 2 }, breach: 1, bomb: 1, fog: 0, chop: 0.35, target: 1300, blurb: 'Paddlers everywhere. One big splash.' },
+    { name: 'Pea Soup', light: 'overcast', film: 14, n: 12, gap: [0.7, 1.2], spd: 1.22, warn: 0.95, decoy: [3.5, 6], dk: { duck: 1, log: 3, loon: 3, swimmer: 1, kayak: 2 }, kinds: { neck: 3, humps: 3, tail: 2 }, baby: 1, fog: 0.38, chop: 0.15, target: 1300, blurb: 'Fog rolls in. A tiny visitor, maybe.' },
+    { name: 'Golden Hour', light: 'golden', film: 16, n: 14, gap: [0.6, 1.0], spd: 1.32, warn: 0.9, decoy: [3, 5.5], dk: { duck: 2, log: 2, loon: 2, swimmer: 2, kayak: 2, wave: 1 }, kinds: { neck: 3, humps: 3, tail: 2 }, breach: 1, sail: 1, lm: ['ferry'], fog: 0, chop: 0.25, shy: 0.2, target: 1500, blurb: 'Warm light. A sailboat drifts by.' },
+    { name: 'Nor’easter Chop', light: 'overcast', film: 16, n: 14, gap: [0.5, 0.9], spd: 1.42, warn: 0.85, decoy: [2.8, 5], dk: { duck: 1, log: 2, loon: 2, swimmer: 1, kayak: 1, wave: 5 }, kinds: { neck: 3, humps: 3, tail: 3 }, breach: 1, bomb: 2, fog: 0.1, chop: 1, shy: 0.25, mimic: [9, 14], target: 1450, blurb: 'Whitecaps everywhere. Not all humps are Champ.' },
+    { name: 'Foggy Dusk', light: 'dusk', film: 18, n: 16, gap: [0.45, 0.8], spd: 1.52, warn: 0.8, decoy: [2.8, 5], dk: { duck: 1, log: 3, loon: 3, swimmer: 1, kayak: 1, wave: 2 }, kinds: { neck: 3, humps: 3, tail: 3 }, breach: 1, baby: 1, sail: 1, lm: ['light'], fog: 0.32, chop: 0.3, shy: 0.3, mimic: [8, 12], target: 1650, blurb: 'Pink sky, grey mist.' },
+    { name: 'Moonlit Champ', light: 'night', film: 20, n: 18, gap: [0.4, 0.7], spd: 1.65, warn: 0.75, decoy: [2.5, 4.5], dk: { duck: 1, log: 3, loon: 3, swimmer: 1, kayak: 1, wave: 3 }, kinds: { neck: 3, humps: 3, tail: 3 }, breach: 2, baby: 1, sail: 1, bomb: 1, fog: 0.25, chop: 0.35, shy: 0.35, mimic: [7, 11], target: 1850, blurb: 'The big night. Make it count.' },
   ];
   // Lake Gazette assignments: one photo job per round. Done = +60 points, a front page in the scrapbook.
   const ASSIGN = [
@@ -84,7 +86,7 @@
       i % 3 === 0 ? { t: 'A MASTERPIECE (98+)', tag: 'master' } : i % 3 === 1 ? { t: 'Win 2 encores', tag: 'encore', n: 2 } : { t: 'A postcard shot with a landmark', tag: 'postcard' }];
   }
   const GOALS_SUNSET = [{ t: 'Reach sighting 25', sight: 25 }, { t: 'An encore chain of 3', chain: 3 }, { t: 'Two MASTERPIECES (98+)', tag: 'master', n: 2 }];
-  const SUNSET_RANKS = [[0, 'Day-tripper'], [500, 'Tourist'], [1000, 'Local'], [2000, 'Stringer'], [4000, 'Paparazzo'], [8000, 'Lake Legend']];
+  const SUNSET_RANKS = [[0, 'Day-tripper'], [1000, 'Tourist'], [2500, 'Local'], [5000, 'Stringer'], [8000, 'Paparazzo'], [12000, 'Lake Legend']]; // runs got longer (4★ wins film back), so the ladder moved up
   const RANKS = [[0, 'Tourist'], [3, 'Snapper'], [8, 'Local'], [14, 'Stringer'], [22, 'Shutterbug'], [32, 'Staff Photographer'], [42, 'Lake Laureate'], [50, 'Champ Whisperer']];
   const MEDALS_TOTAL = GOALS_N.length * 3 * 2 + 3;
   // daily request: one style shot the whole lake asks for today (seeded). Extra bonus on top of the medal chase.
@@ -110,7 +112,7 @@
     if (S.gdone[i]) return; S.gdone[i] = true; S.goalsNew.push(i);
     save.goals = save.goals || {}; const a = (save.goals[S.gkey] || []).slice(0, 3); while (a.length < 3) a.push(false);
     const had = a[i]; a[i] = true; save.goals[S.gkey] = a; persist();
-    toast('◆ MASTERY GOAL' + (had ? ' AGAIN' : '!'), S.goals[i].t); Snd.medal(); buzz([15, 30, 15, 30, 20]); S.hudDirty = true;
+    S.hudDirty = true;
   }
   function goalsPhoto(photo, newTags, ev) {
     S.goals.forEach((G, i) => {
@@ -124,7 +126,7 @@
     });
     if (S.req && !S.reqDone && newTags.indexOf(S.req.tag) >= 0) {
       S.reqN++; S.hudDirty = true;
-      if (S.reqN >= S.req.n) { S.reqDone = true; S.score += 50; pop(W / 2, 132 + insetTopW, 'REQUEST DONE! +50', '#ffe36b', 22); toast('TODAY’S REQUEST DONE!', S.req.t); Snd.medal(); buzz([15, 30, 15]); }
+      if (S.reqN >= S.req.n) { S.reqDone = true; S.score += 50; flashAssign(); Snd.medal(); buzz([15, 30, 15]); }
     }
   }
   function goalsEnd(pass) {
@@ -167,7 +169,7 @@
     if (!e || S.film < 1 || S.phase !== 'play') return;
     const sp = pickSpot(e.kind), ev = newEv(e.kind, { x: sp.x, y: sp.y, encore: e.chain, warn: Math.max(0.5, 0.78 - 0.08 * e.chain) });
     if (e.chain === 1) S.encoresUsed++; S.chainBest = Math.max(S.chainBest || 0, e.chain); save.encoreBest = Math.max(save.encoreBest || 0, e.chain);
-    pop(ev.x, ev.y - 56 * ev.s, 'ENCORE ×' + ENCORE_MULT[e.chain], '#8be8ff', 22); Snd.encore(); buzz([20, 30, 20]);
+    Snd.encore(); buzz([20, 30, 20]);
     S.goals.forEach((G, i) => { if (G.chain && !S.gdone[i]) { S.gprog[i] = Math.max(S.gprog[i], e.chain); if (e.chain >= G.chain) goalHit(i); } });
   }
   const ATTRACT = { name: 'Attract', light: 'morning', gap: [3.5, 5.5], spd: 1.0, warn: 1.0, decoy: [6, 9], dk: { duck: 2, log: 2, loon: 2, swimmer: 1 }, kinds: { neck: 3, humps: 3, tail: 2 }, fog: 0, chop: 0.1 };
@@ -235,7 +237,7 @@
   function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* quota or private mode */ } }
 
   // ---------- layout ----------
-  let W = 360, H = 780, HY = 234, BY = 668, cssScale = 1, dpr = 1, K = 1, land = false, UI = 1, F = 104;
+  let W = 360, H = 780, HY = 234, BY = 668, cssScale = 1, dpr = 1, K = 1, land = false, UI = 1, F = 118;
   let insetTopW = 0, insetBotW = 0, lastLayout = { w: 0, h: 0 };
   function layout(force) {
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -264,7 +266,7 @@
     document.documentElement.style.setProperty('--inset-bot', botPx + 'px');
     insetTopW = topPx / cssScale; insetBotW = botPx / cssScale;
     W = nW; H = nH;
-    UI = land ? 0.82 : 1; F = Math.round(104 * (land ? 0.92 : 1));
+    UI = land ? 0.82 : 1; F = Math.round(118 * (land ? 0.92 : 1));
     dpr = Math.min(2, window.devicePixelRatio || 1);
     cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
     K = cv.width / W;
@@ -274,7 +276,7 @@
     document.body.classList.toggle('compact', H < 560);
     document.body.classList.toggle('short', !land && H < 700);
     if (S && (oW !== W || oLand !== land)) remap(oW, oHY, oBY);
-    if (!force && !shrunk && S && S.screen === 'play' && !S.paused) { pause(); $('#pauseSub').textContent = 'Phone turned: tap RESUME when you’re ready'; }
+    if ((oLand !== land || (!force && !shrunk)) && S && S.screen === 'play' && !S.paused) { pause(); $('#pauseSub').textContent = 'Phone turned: tap RESUME when you’re ready'; } // turning the phone always pauses
   }
   function remap(oW, oHY, oBY) {
     const fx = (x) => x * W / oW, fy = (y) => HY + (y - oHY) / Math.max(1, oBY - oHY) * (BY - HY);
@@ -287,7 +289,7 @@
   const S = {
     screen: 'title', mode: 'campaign', round: 0, R: ATTRACT, attract: true, paused: false, t: 0, phase: 'attract', introT: 0, endT: 0,
     film: 0, filmMax: 9, score: 0, shownScore: 0, streak: 0, bestStreak: 0, photos: [], sights: [], sightsDone: 0, sightN: 0,
-    ev: null, queue: [], nextSight: 2, nextDecoy: 5, decoys: [], boats: [], rings: [], parts: [], pops: [], flashes: [], pols: [], snapQ: [],
+    ev: null, queue: [], nextSight: 2, nextDecoy: 5, decoys: [], boats: [], rings: [], parts: [], pops: [], flashes: [], pols: [], snapQ: [], flys: [], filmPend: 0, assignFlash: 0,
     wx: { fog: 0, chop: 0.1 }, wxT: { fog: 0, chop: 0.1 }, light: 'morning', shake: 0, lastSpot: null, tourists: [], bubbles: [], hud: true,
     tut: false, tutHand: 0, rareFound: [], newSights: [], noPause: false, headless: false, idc: 0, hudDirty: true, sunsetWxT: 0, decoysOK: true, evCount: 0,
     runStart: 0, bestPhoto: null, birds: [], nextBirds: 6,
@@ -297,11 +299,11 @@
   // ---------- helpers: geometry ----------
   const wobble = (o) => (S.wx.chop > 0.02 ? S.wx.chop * 2.6 * Math.sin(S.t * 2.4 + o.x * 0.03) * (o.s || 1) : 0);
   function pickSpot(kind) {
-    const yMin = HY + (land ? 26 : 36), yMax = BY - Math.round(104 * UI);
+    const yMin = HY + (land ? 46 : 80), yMax = BY - Math.round(104 * UI); // no tiny far-away Champs at the horizon (postcard spots are placed on their own)
     let best = null;
     for (let i = 0; i < 16; i++) {
       const y = yMin + (yMax - yMin) * Math.pow(rand(), 0.9), s = Art.depthScale(y) * (kind === 'baby' ? 1.15 : 1);
-      const m = 66 * s + 12, xr = land ? W - 2 * m - PW * UI * 1.4 : W - 2 * m, x = m + rand() * xr; // landscape: keep clear of the polaroid corner
+      const m = 75 * s + 12, xr = land ? W - 2 * m - PW * UI * 1.4 : W - 2 * m, x = m + rand() * xr; // landscape: keep clear of the polaroid corner
       let ok = true;
       if (S.lastSpot && Math.hypot(S.lastSpot.x - x, (S.lastSpot.y - y) * 1.6) < 95) ok = false;
       S.decoys.forEach(d => { if (Math.abs(d.y - y) < 40 && Math.abs(d.x - x) < 90) ok = false; });
@@ -320,10 +322,13 @@
     // fast flicks (tail, breach) only speed up with the square root of the round speed, so their sweet spot stays
     // wider than a human reaction spread even in late rounds
     let D = BASE_D[kind] / (kind === 'tail' || kind === 'breach' ? Math.sqrt(R.spd || 1) : (R.spd || 1));
+    // the round ramps: the last sightings come up quicker and with a shorter warning than the first
+    const nR = S.mode === 'sunset' || S.attract ? 0 : S.sights.length, rk = nR > 1 ? clamp(S.sightN / (nR - 1), 0, 1) : 0;
+    D /= 1 + 0.25 * rk;
     if (tutorial) D = 3.7;
     if (opts.encore) D *= 1 - 0.07 * opts.encore; // each encore link is a little quicker
     const gold = !tutorial && !S.attract && !S.headless && !opts.encore && rand() < (S.mode === 'sunset' || S.pro ? 0.06 : 0.03);
-    const ev = { gold, id: ++S.idc, kind, x: sp.x, y: sp.y, s: sp.s * 1.12 * (kind === 'humps' || kind === 'sail' ? 0.94 : 1), dir, state: 'warn', t: 0, warn: tutorial ? 1.4 : (opts.warn || R.warn || 1), D: opts.D || D, u: 0, ringT: 0, best: 0, shots: 0, refW: 1, s1: false, s2: false, tut: tutorial, idx: opts.encore ? -1 : S.sightN, encore: opts.encore || 0, shy: opts.shy !== undefined ? !!opts.shy : !tutorial && !opts.encore && !S.attract && rand() < (R.shy || 0) * (S.mode === 'sunset' ? Math.min(2.5, 1 + S.sightN / 10) : 1), lm: opts.lm || null, bomb: !!opts.bomb, tagged: {} };
+    const ev = { gold, id: ++S.idc, kind, x: sp.x, y: sp.y, s: sp.s * CHAMP_K * (kind === 'humps' || kind === 'sail' ? 0.94 : kind === 'tail' ? 1.15 : 1), dir, state: 'warn', t: 0, warn: tutorial ? 1.4 : (opts.warn || (R.warn || 1) * (1 - 0.2 * rk)), D: opts.D || D, u: 0, ringT: 0, best: 0, shots: 0, refW: 1, s1: false, s2: false, tut: tutorial, idx: opts.encore ? -1 : S.sightN, encore: opts.encore || 0, shy: opts.shy !== undefined ? !!opts.shy : !tutorial && !opts.encore && !S.attract && rand() < (R.shy || 0) * (S.mode === 'sunset' ? Math.min(2.5, 1 + S.sightN / 10) : 1), lm: opts.lm || null, bomb: !!opts.bomb, tagged: {} };
     ev.refW = refWeight(ev);
     ev.vx = S.attract ? 0 : ev.dir * (DRIFT[kind] || 0) * ev.s * Math.sqrt(R.spd || 1);
     S.ev = ev; S.lastSpot = { x: ev.x, y: ev.y };
@@ -336,13 +341,12 @@
     Snd.ripple(); if (!opts.encore) S.sightN++;
     S.evCount++;
     if (!S.attract && !S.headless && S.screen === 'play' && (kind === 'tail' || kind === 'breach') && !(save.told || (save.told = {}))[kind]) { save.told[kind] = 1; persist(); toast(kind === 'tail' ? 'TAIL FLICK' : 'BIG BREACH', kind === 'tail' ? 'It blurs while it flicks. Snap when it holds still.' : 'Snap at the very top of the leap, not on the way up.'); }
-    if (ev.shy && !S.shyTold && !S.headless) { S.shyTold = true; toast('SHY CHAMP', 'Blue ripples: snap too early and he bolts'); }
-    if (opts.bomb) { addCritter(ev); pop(ev.x, ev.y - 56 * ev.s, 'PHOTOBOMB CHANCE!', '#fff0b0', 17); }
-    if (opts.lm && !S.attract) pop(ev.x, ev.y - 56 * ev.s, 'POSTCARD SPOT!', '#fff0b0', 17);
+    if (ev.shy && !S.shyTold && !S.headless) { S.shyTold = true; if (!save.told.shy) { save.told.shy = 1; persist(); toast('SHY CHAMP', 'Blue ripples: snap too early and he bolts'); } }
+    if (opts.bomb) addCritter(ev);
     return ev;
   }
-  // the sparkle is training wheels: Rounds 1–4 and the first sightings of Sunset. Later rounds, PRO and the Daily make you read the pose.
-  function sparkleOn() { return S.mode === 'campaign' ? (S.round < 4 && !S.pro) : S.mode === 'sunset' ? S.sightN <= 8 : false; }
+  // the sparkle is training wheels: Rounds 1–2 and the first 4 sightings of Sunset. Later rounds, PRO and the Daily make you read the pose.
+  function sparkleOn() { return S.mode === 'campaign' ? (S.round < 2 && !S.pro) : S.mode === 'sunset' ? S.sightN <= 4 : false; }
   // where a player sees "the middle": the weighted centre of everything above the surface
   function massCenter(ev, p, bob) {
     let sx = 0, sy = 0, sw = 0;
@@ -369,7 +373,7 @@
     });
     return out;
   }
-  function splash(ev, big) {
+  function splash(ev, big, plop) {
     const bob = wobble(ev), n = big ? 16 : 8, s = ev.s;
     const spots = ev.kind === 'humps' || ev.kind === 'sail' ? [-30, 0, 30] : [0];
     spots.forEach(dx => {
@@ -378,12 +382,12 @@
       S.rings.push({ x, y: ev.y + bob, r: 2, vr: 26 * s * (big ? 1.4 : 1), a: 0.7, life: 1.4, t: 0.12, flat: 0.3, w: 1.6 * s + 0.5 });
       for (let i = 0; i < n / spots.length + 2; i++) S.parts.push({ x: x + (rand() - 0.5) * 30 * s, y: ev.y + bob - 2, vx: (rand() - 0.5) * 70 * (big ? 1.6 : 1), vy: -(60 + rand() * 120) * (big ? 1.5 : 1) * Math.sqrt(s), t: 0, life: 0.7 + rand() * 0.5, r: 1.2 + rand() * 1.8 * s });
     });
-    Snd.splash(big ? 1.4 : 0.8);
+    if (plop) Snd.plop(); else Snd.splash(big ? 1.4 : 0.8);
     if (big) { S.shake = Math.max(S.shake, ev.kind === 'breach' ? 5 : 2); }
   }
   function updateEv(dt) {
     const ev = S.ev; if (!ev) return;
-    ev.t += dt;
+    ev.t += dt * (ev.dive && ev.state === 'up' ? ev.dive : 1);
     if (ev.state === 'warn') {
       ev.ringT -= dt;
       if (ev.ringT <= 0) {
@@ -400,25 +404,24 @@
       // peak glint: fires as the pose climbs toward its best moment, so a human tap lands on the peak
       if (!ev.glint && ev.t >= (PEAK_U[ev.kind] || 0.5) * ev.D - GLINT_LEAD) { ev.glint = S.t; ev.showGlint = sparkleOn(); if (ev.showGlint && !S.headless && !S.attract && S.screen === 'play') Snd.ting(); }
       if (!ev.s1 && ev.u > (ev.kind === 'breach' ? 0.0 : 0.05)) { ev.s1 = true; splash(ev, ev.kind === 'breach' ? 2 : 0); }
-      if (!ev.s2 && ev.u > (ev.kind === 'breach' ? 0.96 : 0.92)) { ev.s2 = true; splash(ev, ev.kind === 'breach' ? 2 : 0); }
-      if (ev.t >= ev.D + 0.15) finishEv();
+      if (!ev.s2 && ev.u > (ev.kind === 'breach' ? 0.96 : 0.92)) { ev.s2 = true; splash(ev, ev.kind === 'breach' ? 2 : 0, !!ev.dive); }
+      if (ev.t >= ev.D + (ev.dive ? 0 : 0.15)) finishEv();
     }
   }
   function finishEv() {
     const ev = S.ev; S.ev = null;
     if (S.screen === 'play') {
       const st = ev.idx >= 0 ? S.sights[ev.idx] : null;
-      if (st) st.best = ev.best;
-      if (st && st.status === 'pending') {
-        st.status = ev.best >= 14 ? 'got' : 'missed';
-        if (st.status === 'missed') pop(ev.x, ev.y - 40 * ev.s, ev.shots ? 'Not a keeper' : 'Got away!', '#ffd0c8', 20);
-      }
+      if (st) { st.best = ev.best; st.shot = ev.shots > 0; }
+      if (st && st.status === 'pending') st.status = ev.best >= 34 ? 'got' : 'missed';
+      // a sighting that dives without a 2★ photo got away: it costs the streak, so a hard tail can't just be ignored
+      if (ev.best < 34 && !ev.tut && !ev.encore && S.phase === 'play') { if (S.streak) S.streak = 0; pop(ev.x, ev.y - 30 * ev.s, 'GOT AWAY', '#c9d3d8', 14, 0.8); }
       if (ev.idx >= 0) S.sightsDone++;
       S.hudDirty = true;
       // a 4★+ photo earns an encore: he comes back for another look (needs film to spare)
-      if (S.phase === 'play' && encoreOK(ev)) S.encoreNext = { kind: ev.kind === 'sail' ? 'humps' : ev.kind, chain: (ev.encore || 0) + 1, t: 0.85 };
+      if (S.phase === 'play' && encoreOK(ev)) S.encoreNext = { kind: ev.kind === 'sail' ? 'humps' : ev.kind, chain: (ev.encore || 0) + 1, t: 0.7 };
     }
-    S.nextSight = (S.encoreNext ? 0.85 : rr(S.R.gap)) * (S.mode === 'sunset' ? Math.max(0.55, 1 - S.sightN * 0.012) : 1);
+    S.nextSight = S.encoreNext ? 0.7 : ev.dive ? 0.45 : rr(S.R.gap);
   }
 
   // ---------- decoys ----------
@@ -449,7 +452,7 @@
   function spawnMimic() {
     for (let t = 0; t < 8; t++) {
       const sp = pickSpot('humps'); if (S.ev && Math.hypot(S.ev.x - sp.x, (S.ev.y - sp.y) * 1.6) < 120) continue;
-      S.decoys.push({ id: ++S.idc, kind: 'mimic', x: sp.x, y: sp.y, s: sp.s * 1.12 * 0.94, dir: rand() < 0.5 ? 1 : -1, vx: 0, t: 0, life: 3.4, e: 1, ph: rand() * 6, moving: false, tilt: 0, called: false });
+      S.decoys.push({ id: ++S.idc, kind: 'mimic', x: sp.x, y: sp.y, s: sp.s * CHAMP_K * 0.94, dir: rand() < 0.5 ? 1 : -1, vx: 0, t: 0, life: 3.4, e: 1, ph: rand() * 6, moving: false, tilt: 0, called: false });
       if (!S.headless && !(save.told || (save.told = {})).mimic) { save.told.mimic = 1; persist(); toast('MOSSY LOG', 'Humps with no ripples first? Not Champ. Skip it.'); }
       return;
     }
@@ -512,8 +515,8 @@
   }
   // daily lineups store spots as fractions of the lake so they fit any screen
   function spotFromFrac(it) {
-    const yMin = HY + (land ? 26 : 36), yMax = BY - Math.round(104 * UI);
-    const y = yMin + (yMax - yMin) * it.fy, s = Art.depthScale(y) * (it.kind === 'baby' ? 1.15 : 1), m = 66 * s + 12;
+    const yMin = HY + (land ? 46 : 80), yMax = BY - Math.round(104 * UI);
+    const y = yMin + (yMax - yMin) * it.fy, s = Art.depthScale(y) * (it.kind === 'baby' ? 1.15 : 1), m = 75 * s + 12;
     return { x: m + it.fx * (land ? W - 2 * m - PW * UI * 1.4 : W - 2 * m), y };
   }
   function nextSunsetKind() {
@@ -523,13 +526,25 @@
     if (n > 6 && n % 6 === 3) return { kind: wpick({ neck: 3, humps: 3, tail: 3 }), bomb: true };
     if (n > 3 && r < 0.07) return 'baby';
     if (n > 5 && r < 0.14) return 'sail';
+    if (n >= 12) return rand() < 0.5 ? (rand() < 0.62 ? 'tail' : 'breach') : wpick({ neck: 1, humps: 1 }); // late in the run, half the lineup is the hard, fast ones
     if (n > 2 && r < 0.26) return 'breach';
     return wpick({ neck: 3, humps: 3, tail: 3 });
   }
 
   // ---------- effects ----------
-  function pop(x, y, txt, col, size) { S.pops.push({ x, y, txt, col: col || '#fff', t: 0, life: 1.3, size: size || 22 }); }
+  function pop(x, y, txt, col, size, life) { S.pops.push({ x, y, txt, col: col || '#fff', t: 0, life: life || 1.3, size: size || 22 }); }
+  // the Gazette banner is hidden in play; it flashes for 1.2 s when the job is done
+  function flashAssign() { S.assignFlash = S.t + 1.2; S.hudDirty = true; }
+  // a frame flies from the photo into the film chip
+  function filmFly(x, y) {
+    S.filmPend = (S.filmPend || 0) + 1; S.hudDirty = true;
+    let tx = 30, ty = 24 + insetTopW;
+    try { const r = el.filmChip.getBoundingClientRect(), sr = stage.getBoundingClientRect(); if (r.width) { tx = (r.left - sr.left + r.width * 0.3) / cssScale; ty = (r.top - sr.top + r.height / 2) / cssScale; } } catch (e) { /* */ }
+    S.flys.push({ x0: x, y0: y - 20, x1: tx, y1: ty, t: -0.15 });
+  }
   function updateFx(dt) {
+    for (let i = S.flys.length - 1; i >= 0; i--) { const f = S.flys[i]; f.t += dt; if (f.t >= 0.6) { S.flys.splice(i, 1); S.filmPend = Math.max(0, (S.filmPend || 0) - 1); S.hudDirty = true; S.chipBump = true; if (!S.headless) Snd.film(); } }
+    if (S.assignFlash && S.t > S.assignFlash) { S.assignFlash = 0; S.hudDirty = true; }
     for (let i = S.rings.length - 1; i >= 0; i--) { const r = S.rings[i]; r.t += dt; if (r.t > 0) { r.r += r.vr * dt; } if (r.t > r.life) S.rings.splice(i, 1); }
     for (let i = S.parts.length - 1; i >= 0; i--) {
       const p = S.parts[i]; p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt;
@@ -537,7 +552,7 @@
       if (p.t > p.life) S.parts.splice(i, 1);
     }
     for (let i = S.pops.length - 1; i >= 0; i--) { const p = S.pops[i]; p.t += dt; p.y -= 30 * dt * (1 - p.t / p.life); if (p.t > p.life) S.pops.splice(i, 1); }
-    for (let i = S.flashes.length - 1; i >= 0; i--) { const f = S.flashes[i]; f.t += dt; if (f.t > 0.55) S.flashes.splice(i, 1); }
+    for (let i = S.flashes.length - 1; i >= 0; i--) { const f = S.flashes[i]; f.t += dt; if (f.t > 0.6) S.flashes.splice(i, 1); }
     for (let i = S.bubbles.length - 1; i >= 0; i--) { const b = S.bubbles[i]; b.t += dt; if (b.t > b.life) S.bubbles.splice(i, 1); }
     S.shake = Math.max(0, S.shake - dt * 22);
     S.wx.fog += (S.wxT.fog - S.wx.fog) * Math.min(1, dt * 0.6);
@@ -571,7 +586,7 @@
         let cen = clamp(1 - Math.pow(d / (0.5 * F), 1.6), 0, 1); // centring matters: 5★ needs a tap near his middle
         const fill = Math.max(fx1 - fx0, fy1 - fy0) / F, size = clamp((fill - 0.12) / 0.44, 0, 1);
         const fogA = Art.fogAt(S.wx.fog, ev.y);
-        const vis = clamp(iw / ev.refW, 0, 1) * (1 - 0.45 * fogA);
+        const vis = clamp(iw / ev.refW, 0, 1) * (1 - 0.12 * fogA); // fog is scenery, not a tax the player can't dodge
         const timing = (ev.kind === 'humps' || ev.kind === 'sail') ? Math.pow(clamp(p.pk, 0, 1), 1.7) : clamp(p.pk, 0, 1); // humps have a wide plateau, so make the peak itself count
         // motion: compare with the pose 1/30s earlier
         const dtp = 1 / 30, p0 = Art.pose(ev.kind, clamp((ev.t - dtp) / ev.D, 0, 1), S.t - dtp), w0 = sampleWorld(Object.assign({}, ev, { x: ev.x - (ev.vx || 0) * dtp }), p0, bob);
@@ -639,8 +654,9 @@
     S.film--; S.hudDirty = true;
     y = clamp(y, HY * 0.25, BY - 2);
     x = clamp(x, F / 2, W - F / 2); y = clamp(y, F / 2, H - F / 2);
-    S.snapQ.push({ x, y });
-    S.flashes.push({ x, y, t: 0 });
+    const fl = { x, y, t: 0, rt: performance.now() };
+    S.snapQ.push({ x, y, fl });
+    S.flashes.push(fl);
     Snd.shutter(); buzz(14);
     save.photosTaken = (save.photosTaken || 0) + 1;
     return true;
@@ -650,6 +666,7 @@
   }
   function developPhoto(sn) {
     const g = gradeSnap(sn);
+    if (sn.fl) sn.fl.gold = g.stars >= 5;
     const cx = clamp(sn.x, F / 2, W - F / 2), cy = clamp(sn.y, F / 2, H - F / 2);
     const P = Math.round(F * K);
     const pc = document.createElement('canvas'); pc.width = pc.height = Math.max(8, P);
@@ -684,7 +701,7 @@
       // the streak counts sightings, not photos, so rapid-fire taps on one pose can't pump it
       if (g.stars >= 3) { if (!ev.streaked) { ev.streaked = true; S.streak++; S.bestStreak = Math.max(S.bestStreak, S.streak); } }
       else if (!ev.streaked) S.streak = 0;
-      if (g.stars >= 1 && S.sights[ev.idx] && S.sights[ev.idx].status !== 'got') S.sights[ev.idx].status = 'got';
+      if (g.stars >= 2 && S.sights[ev.idx] && S.sights[ev.idx].status !== 'got') S.sights[ev.idx].status = 'got';
       // style shots: compositions that pay a little extra (once per sighting) and fill the Shot Book
       const st = g.stars, k = ev.kind, tg = [];
       if (g.wink && st >= 3) tg.push('wink');
@@ -700,27 +717,24 @@
         ev.tagged[t] = 1; bonus += STYLES[t].pts; S.tagCount[t] = (S.tagCount[t] || 0) + 1;
         if (!save.shots[t]) S.newShots.push(t);
         save.shots[t] = (save.shots[t] || 0) + 1; if (t === 'master') save.master = (save.master || 0) + 1;
-        if ((t === 'oneshot' || t === 'wink') && tg.length > 1) return;
-        pop(sn.x, sn.y - 54 - ti * 20, STYLES[t].n.toUpperCase() + (STYLES[t].pts ? ' +' + STYLES[t].pts : ''), t === 'master' ? '#ffe36b' : '#bff3ff', t === 'master' ? 21 : 17);
       });
       if (newTags.length) { const nn = newTags.filter(t => t !== 'wink' && t !== 'oneshot').length; if (nn) { Snd.style(S.streak); buzz([14, 26, 14]); } else Snd.style(0); persist(); }
       if (g.stars >= 1) { const bk = save.best[kind] || (save.best[kind] = { score: 0, stars: 0 }); if (g.score > bk.score) { bk.score = g.score; bk.stars = g.stars; } }
-      // film pops go under the frame so they never sit on top of the points pop
-      const fy = Math.min(BY - 12, sn.y + F / 2 + 16);
-      // bonus film once per sighting
-      if (g.stars >= 5 && !ev.filmBack && (S.mode !== 'sunset' || S.film <= 5)) { ev.filmBack = true; S.film = Math.min(S.filmMax + 2, S.film + 1); pop(sn.x, fy, '+1 film!', '#8be8ff', 18); }
-      else if (S.mode === 'sunset' && g.stars >= 4 && S.film <= 4 && !ev.filmBack) { ev.filmBack = true; S.film = Math.min(S.filmMax + 2, S.film + 1); pop(sn.x, fy, '+1 film', '#8be8ff', 16); }
+      // a 5★ gives a frame back, once per sighting. Sunset: any 4★+ until dusk (sighting SUN_DUSK), then only 5★; up to 10 in the camera
+      if (g.stars >= (S.mode === 'sunset' && S.sightN <= SUN_DUSK ? 4 : 5) && !ev.filmBack && S.film < (S.mode === 'sunset' ? 10 : S.filmMax + 2)) { ev.filmBack = true; S.film++; filmFly(sn.x, sn.y); }
       // shutter hit-pause: the world holds its breath on a good shot
       if (!(S.hitStop > 0)) S.hitStop = g.stars >= 5 ? 0.2 : g.stars >= 3 ? 0.11 : 0.06;
       if (g.stars >= 5) S.shake = Math.max(S.shake, 4);
+      // got him: he dives right away so the next sighting comes sooner (a weaker photo leaves him up for another try)
+      if (g.stars >= 4 && ev === S.ev && ev.state === 'up' && !ev.dive && !ev.spooked) ev.dive = Math.max(1, (ev.D - ev.t) / DIVE_T);
       // field guide
-      if (ev.gold && g.stars >= 1 && !ev.goldLogged) { ev.goldLogged = true; save.gold = (save.gold || 0) + 1; S.newGold = true; Snd.rare(); Snd.perfect(); buzz([20, 40, 20, 40, 30]); toast('GOLDEN CHAMP!', 'Spotted ' + save.gold + (save.gold === 1 ? ' time. Legendary.' : ' times')); }
-      if (g.stars >= 1 && g.comps.vis > 0.3 && !save.sights[kind]) { save.sights[kind] = true; S.newSights.push(kind); Snd.rare(); toast('NEW SIGHTING!', CHAMP_NAMES[kind]); }
+      if (ev.gold && g.stars >= 1 && !ev.goldLogged) { ev.goldLogged = true; save.gold = (save.gold || 0) + 1; S.newGold = true; Snd.rare(); Snd.perfect(); buzz([20, 40, 20, 40, 30]); }
+      if (g.stars >= 1 && g.comps.vis > 0.3 && !save.sights[kind]) { save.sights[kind] = true; S.newSights.push(kind); }
     } else if (!(g.kind === 'early' || g.kind === 'dove' || g.kind === 'miss')) {
       S.streak = 0; // decoys and empty water break the streak; a near miss at Champ only costs the film
       if (LIFE_NAMES[g.kind]) { /* decoy photo */ }
     }
-    g.decoys.forEach(dk => { if (!save.life[dk]) { save.life[dk] = true; if (!g.champ) toast('LAKE LIFE LOGGED', LIFE_NAMES[dk]); } });
+    g.decoys.forEach(dk => { save.life[dk] = true; });
     S.run5 = g.champ && g.stars >= 5 ? (S.run5 || 0) + 1 : (g.champ && ev && ev.best >= 94 && g.stars < 5 ? S.run5 : 0); // an extra snap of an already-perfect sighting neither adds nor breaks the run
     S.score += pts + bonus; S.hudDirty = true;
     const id = ++save.idc;
@@ -759,12 +773,10 @@
   }
   function assignDone(photo) {
     S.assignDone = true; S.score += 60; S.hudDirty = true; save.assign = save.assign || {};
-    const first = !save.assign[S.round];
     const best = photo && photo.thumb ? photo : S.bestPhoto;
     save.assign[S.round] = { img: (best && best.thumb) || (save.assign[S.round] && save.assign[S.round].img) || null, ts: Date.now() };
     persist();
-    pop(W / 2, 132 + insetTopW, 'SCOOP! +60', '#ffe36b', 22);
-    toast(first ? 'FRONT PAGE!' : 'SCOOP AGAIN!', S.assign.head);
+    if (S.phase === 'play') flashAssign();
     Snd.rare(); buzz([15, 30, 15]);
   }
   function burstStars(x, y) {
@@ -792,6 +804,8 @@
 
   // ---------- polaroids ----------
   const PW = 136, PHT = 208, PAD = 8;
+  // in-play card timing, on the snap tempo: develops in 0.45 s, stars from 0.5 s at 0.09 s apart (verdict done by ~0.95 s)
+  const P_DEV0 = 0.1, P_DEV = 0.45, P_REV = 0.5, P_STG = 0.09, P_SC = 0.82, polHold = (st) => st >= 4 ? 2.4 : 1.8;
   function addPola(photo, sn) {
     S.pols.forEach(p => { p.pushed = true; });
     S.pols.unshift({ photo, born: S.t, rot: (rand() - 0.5) * 0.12, shown: 0, snd: 0, pushedAt: 0 });
@@ -801,19 +815,19 @@
     for (let i = S.pols.length - 1; i >= 0; i--) {
       const p = S.pols[i], age = S.t - p.born;
       if (p.pushed && !p.pushedAt) p.pushedAt = S.t;
-      const hold = p.photo.stars >= 4 ? 4.4 : 3.3;
+      const hold = polHold(p.photo.stars);
       const dead = p.pushed ? S.t - p.pushedAt > 1.6 : age > hold + 0.6;
       if (dead && age > 0.4) { S.pols.splice(i, 1); continue; }
       // sound cues for development
-      if (!p.devSnd && age > 0.15) { p.devSnd = true; if (p.photo.champ) Snd.develop(); }
+      if (!p.devSnd && age > 0.08) { p.devSnd = true; if (p.photo.champ) Snd.develop(); }
       const nStars = p.photo.stars;
-      const startRev = p.pushed ? 0 : 1.05;
+      const startRev = p.pushed ? 0 : P_REV;
       if (p.pushed && p.snd < nStars) p.snd = nStars; // already developed: show the stars, skip the leftover dings
-      if (p.photo.champ && p.snd < nStars && age > startRev + p.snd * 0.16) { Snd.star(p.snd, nStars >= 5, Math.min(p.photo.streak || 0, 6)); p.snd++; if (p.snd === 5) Snd.perfect(); }
+      if (p.photo.champ && p.snd < nStars && age > startRev + p.snd * P_STG) { Snd.star(p.snd, nStars >= 5, Math.min(p.photo.streak || 0, 6)); p.snd++; if (p.snd === 5) Snd.perfect(); }
       // the stamp lands just after the last star
-      const stampAt = startRev + nStars * 0.16 + 0.12;
+      const stampAt = startRev + nStars * P_STG + 0.12;
       if (!p.stamped && p.photo.champ && (nStars >= 5 || p.photo.top) && (p.pushed || age > stampAt)) { p.stamped = S.t; if (!p.pushed) { Snd.stamp(); buzz(18); } }
-      if (p.photo.champ && nStars === 0 && !p.zero && age > 1.0) { p.zero = true; Snd.meh(); }
+      if (p.photo.champ && nStars === 0 && !p.zero && age > 0.55) { p.zero = true; Snd.meh(); }
     }
   }
   function star5(c, x, y, r) {
@@ -828,18 +842,18 @@
     return lines;
   }
   function drawPola(p, i) {
-    const ph = p.photo, age = S.t - p.born, sc0 = UI * (i === 0 ? 1 : 0.8);
+    const ph = p.photo, age = S.t - p.born, sc0 = UI * P_SC * (i === 0 ? 1 : 0.8);
     const slideIn = sm(age / 0.38), over = age < 0.38 ? 1 + Math.sin(slideIn * Math.PI) * 0.06 : 1;
     let out = 0;
     if (p.pushed) out = sm((S.t - p.pushedAt - 1.1) / 0.5);
-    else { const hold = ph.stars >= 4 ? 4.4 : 3.3; out = sm((age - hold) / 0.5); }
+    else { const hold = polHold(ph.stars); out = sm((age - hold) / 0.5); }
     const baseY = H - 10 - insetBotW;
     const fan = [[0, 0, 0], [-78, 12, -0.14], [78, 14, 0.14]][Math.min(i, 2)];
     const ci = Math.min(i, 2);
-    const tx = (land ? W - PW * UI * 0.62 - 14 : W / 2) + fan[0] * UI * (land ? 0.55 : 1), ty = baseY + fan[1] * UI;
-    const y = ty + (1 - slideIn) * (PHT * UI + 40) + out * 70 * UI, a = 1 - out;
+    const tx = (land ? W - PW * UI * 0.62 - 14 : W / 2) + fan[0] * UI * P_SC * (land ? 0.55 : 1), ty = baseY + fan[1] * UI * P_SC;
+    const y = ty + (1 - slideIn) * (PHT * UI * P_SC + 40) + out * 70 * UI, a = 1 - out;
     // shake it like a polaroid while it develops
-    const wig = p.pushed ? 0 : Math.sin(clamp((age - 0.22) / 0.8, 0, 1) * Math.PI);
+    const wig = p.pushed ? 0 : Math.sin(clamp((age - 0.08) / 0.42, 0, 1) * Math.PI);
     ctx.save(); ctx.globalAlpha = clamp(a, 0, 1);
     ctx.translate(tx + Math.sin(age * 29) * 4 * wig * UI, y); ctx.rotate(p.rot + fan[2] + Math.sin(age * 34) * 0.07 * wig); ctx.scale(sc0 * over, sc0 * over);
     const x0 = -PW / 2, y0 = -PHT;
@@ -850,7 +864,7 @@
     ctx.strokeStyle = 'rgba(120,100,70,0.25)'; ctx.lineWidth = 1; ctx.stroke();
     // photo
     const pw = PW - PAD * 2, px = x0 + PAD, py = y0 + PAD;
-    const dev = p.pushed ? 1 : clamp((age - 0.25) / 0.9, 0, 1);
+    const dev = p.pushed ? 1 : clamp((age - P_DEV0) / P_DEV, 0, 1);
     ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, pw); ctx.clip();
     ctx.fillStyle = '#c9b690'; ctx.fillRect(px, py, pw, pw);
     ctx.drawImage(ph.canvas, px, py, pw, pw);
@@ -881,7 +895,7 @@
     const sy = py + pw + 15, shown = ph.champ ? p.snd : 0;
     if (ph.champ) {
       for (let s = 0; s < 5; s++) {
-        const sx = x0 + PW / 2 + (s - 2) * 21, on = s < shown, since = on ? clamp((S.t - (p.born + (p.pushed ? 0 : 1.05) + s * 0.16)) / 0.3, 0, 1) : 0;
+        const sx = x0 + PW / 2 + (s - 2) * 21, on = s < shown, since = on ? clamp((S.t - (p.born + (p.pushed ? 0 : P_REV) + s * P_STG)) / 0.3, 0, 1) : 0;
         const rs = 9 + (on ? Math.sin(since * Math.PI) * 5 : 0);
         star5(ctx, sx, sy, rs);
         if (on) { ctx.fillStyle = '#f9b81a'; ctx.fill(); ctx.strokeStyle = '#a86a00'; ctx.lineWidth = 1.2; ctx.stroke(); }
@@ -893,13 +907,13 @@
       ctx.fillText(k === 'early' ? 'TOO EARLY — WAIT FOR HIM' : k === 'dove' ? 'TOO LATE — HE DOVE' : k === 'miss' ? 'MISSED — AIM AT HIM' : LIFE_NAMES[k] ? 'NOT CHAMP — A ' + LIFE_NAMES[k].toUpperCase() : 'NO CHAMP — FILM USED', x0 + PW / 2, sy + 4, PW - 10);
     }
     // caption
-    const capShow = p.pushed || age > 0.95;
+    const capShow = p.pushed || age > P_REV;
     if (capShow) {
       ctx.font = '700 17px Caveat, "Bradley Hand", cursive'; ctx.textAlign = 'center'; ctx.fillStyle = '#2b2118';
       const lines = wrapText(ctx, ph.caption, PW - 14);
       lines.slice(0, 2).forEach((l, j) => ctx.fillText(l, x0 + PW / 2, sy + 25 + j * 14));
       if (ph.champ && !ph.improved && ph.stars > 0) { ctx.font = '600 9px Fredoka, sans-serif'; ctx.fillStyle = '#7a8a8a'; ctx.fillText('(already have a better one)', x0 + PW / 2, y0 + PHT - 7, PW - 10); }
-      else if (ph.hint && ph.champ) {
+      else if (ph.hint && ph.champ && ph.stars <= 3) { // the tip only when the photo needs one
         ctx.font = '600 9.5px Fredoka, sans-serif'; ctx.fillStyle = ph.stars >= 4 ? '#1d7d3d' : '#a8452f';
         ctx.fillText(ph.hint, x0 + PW / 2, y0 + PHT - 7, PW - 10);
       }
@@ -911,7 +925,7 @@
   const fr = (n) => { const x = Math.sin(n * 12.9898) * 43758.5453; return x - Math.floor(x); };
   function drawWhitecaps() {
     const c = S.wx.chop; if (c < 0.3) return;
-    const n = Math.round(26 * c);
+    const n = Math.round(13 * c); // fewer whitecaps: they read as hump tops
     ctx.lineCap = 'round';
     for (let i = 0; i < n; i++) {
       const f = Math.pow(fr(i + 1.3), 1.3), y = HY + 14 + f * (BY - HY - 40), sc = 0.45 + f * 0.9;
@@ -959,10 +973,10 @@
     S.tourists.forEach(t => {
       t.next -= dt;
       if (t.pose > 0) t.pose -= dt;
-      if (t.next <= 0) { t.next = 7 + rand() * 9; if (rand() < 0.5 && !S.bubbles.length && !S.pols.length) bubble(t, pick(TOUR_LINES)); }
+      if (t.next <= 0) { t.next = 7 + rand() * 9; if (rand() < 0.5 && !S.bubbles.length && !S.pols.length && (S.attract || !S.ev)) bubble(t, pick(TOUR_LINES)); }
     });
     // they react to Champ... by not reacting
-    if (S.ev && S.ev.state === 'up' && !S.ev.said && S.ev.u > 0.3 && S.tourists.length) { S.ev.said = true; if (rand() < 0.65) bubble(pick(S.tourists), pick(TOUR_LINES)); }
+    if (S.attract && S.ev && S.ev.state === 'up' && !S.ev.said && S.ev.u > 0.3 && S.tourists.length) { S.ev.said = true; if (rand() < 0.65) bubble(pick(S.tourists), pick(TOUR_LINES)); } // in play they stay quiet: the boardwalk is the frame
   }
   function drawTourists() {
     const k = 1.18 * UI;
@@ -970,6 +984,8 @@
       const x = W * t.fx, y = H + 6;
       Art.drawTourist(ctx, x, y, k, S.t, t.who, t.pose > 0 ? 0 : t.face);
     });
+  }
+  function drawBubbles() {
     if (S.pols.length) return; // the card covers the boardwalk; don't half-show a speech bubble
     S.bubbles.forEach(b => {
       const t = b.tour, x0 = W * t.fx, y = H - 100 * UI - (1.18 * UI * 12);
@@ -1004,10 +1020,11 @@
   function targetOf() { return S.mode === 'sunset' ? 0 : S.R.target; }
   function renderHud() {
     if (!S.hudDirty) return; S.hudDirty = false;
-    el.film.textContent = S.film; el.filmChip.classList.toggle('low', S.film <= 2 && S.screen === 'play');
+    el.film.textContent = Math.max(0, S.film - (S.filmPend || 0)); el.filmChip.classList.toggle('low', S.film <= 2 && S.screen === 'play');
+    if (S.chipBump) { S.chipBump = false; el.filmChip.classList.remove('bump'); void el.filmChip.offsetWidth; el.filmChip.classList.add('bump'); }
     const tg = targetOf();
     if (S.mode === 'sunset') {
-      const goal = save.sunsetBest || [500, 1000, 2000, 4000, 8000].find(v => v > S.score) || 16000;
+      const goal = save.sunsetBest || (SUNSET_RANKS.find(a => a[0] > S.score) || [16000])[0];
       el.tgt.textContent = save.sunsetBest ? ' · best ' + save.sunsetBest : ' · next ' + goal;
       el.barT.style.display = 'none'; el.fill.classList.toggle('pass', save.sunsetBest > 0 && S.score > save.sunsetBest); el.fill.style.width = clamp(S.score / goal * 100, 0, 100) + '%';
       el.pips.innerHTML = '<span style="font-size:calc(var(--u)*13);font-weight:600;opacity:.9">Sighting ' + Math.max(1, S.sightN) + '</span>';
@@ -1024,24 +1041,24 @@
         el.fill.classList.toggle('pass', S.score >= tg);
       }
       let h = ''; S.sights.forEach((s, i) => { h += '<i class="pip ' + (s.status === 'got' ? 'got' : s.status === 'missed' ? 'missed' : (S.ev && S.ev.idx === i ? 'live' : '')) + '"></i>'; });
-      el.pips.innerHTML = h;
+      el.pips.innerHTML = h; el.pips.classList.toggle('many', S.sights.length >= 14);
     }
-    const inPlay = S.screen === 'play' || S.screen === 'pause';
+    // the job for this roll shows on the intro and the pause screen, then gets out of the way; it flashes once when done
+    const showJob = S.screen === 'play' && (S.phase === 'intro' || S.assignFlash > 0);
     let txt = '', done = false;
-    if (inPlay) {
-      const A = S.assign, gi = S.gdone.indexOf(false);
+    if (showJob) {
+      const A = S.assign;
       if (S.mode === 'daily' && S.req) { done = S.reqDone; txt = done ? '📷 REQUEST DONE! +50' : '📷 Request: ' + S.req.t + (S.req.n > 1 ? ' (' + S.reqN + '/' + S.req.n + ')' : ''); }
-      else if (A && !S.assignDone) txt = '📰 ' + A.t + (A.count ? ' (' + S.assignN + '/' + A.count + ')' : A.streak ? ' (' + Math.min(S.streak, A.streak) + '/' + A.streak + ')' : '');
-      else if (S.goals.length && gi >= 0 && S.mode !== 'daily') { const G = S.goals[gi], need = G.n || G.sight || G.streak || G.run5 || 0; txt = '📷 ' + G.t + (need > 1 ? ' (' + Math.min(S.gprog[gi], need) + '/' + need + ')' : ''); }
-      else if (S.goals.length && S.mode !== 'daily') { done = true; txt = '📷 ALL GOALS DONE!'; }
-      else if (A && S.assignDone) { done = true; txt = '📰 SCOOP! ' + A.head; }
+      else if (A && S.assignDone) { done = true; txt = '📰 SCOOP! +60 · ' + A.head; }
+      else if (A) txt = '📰 ' + A.t + (A.count ? ' (' + S.assignN + '/' + A.count + ')' : A.streak ? ' (' + Math.min(S.streak, A.streak) + '/' + A.streak + ')' : '');
+      if (S.tut && S.sightN === 0) txt = ''; // the very first roll: nothing to read, just the lake
     }
     el.assign.style.display = txt ? '' : 'none';
     if (txt) { el.assign.classList.toggle('done', done); el.assign.textContent = txt; }
     const sm1 = 1 + 0.1 * Math.min(S.streak, 5);
-    if (S.streak >= 2) el.streak.innerHTML = 'STREAK ' + S.streak + '<b>×' + sm1.toFixed(1) + '</b>';
-    el.streak.classList.toggle('on', S.streak >= 2);
-    if (S.streak >= 2 && S.streak > (S.streakShown || 0)) { el.streak.classList.remove('bump'); void el.streak.offsetWidth; el.streak.classList.add('bump'); }
+    if (S.streak >= 3) el.streak.innerHTML = 'STREAK ' + S.streak + '<b>×' + sm1.toFixed(1) + '</b>';
+    el.streak.classList.toggle('on', S.streak >= 3 && S.screen === 'play');
+    if (S.streak >= 3 && S.streak > (S.streakShown || 0)) { el.streak.classList.remove('bump'); void el.streak.offsetWidth; el.streak.classList.add('bump'); }
     S.streakShown = S.streak;
   }
   function tickScore(dt) {
@@ -1063,15 +1080,20 @@
   function refreshTitle() {
     const done = save.maxRound >= ROUNDS.length;
     $('#btnPlay').textContent = done ? 'PLAY SUNSET' : (save.maxRound === 0 && !save.tut ? 'PLAY' : 'PLAY · ROUND ' + (save.maxRound + 1));
-    const btn = $('#btnSunset'); btn.disabled = !done && !ROUNDS.some((R, i) => proUnlocked(i)); btn.textContent = done || !btn.disabled ? 'PRO ROUNDS' : '🔒 SUNSET';
+    const su = sunsetUnlocked(), btn = $('#btnSunset'); btn.disabled = !su; btn.textContent = su ? 'SUNSET' : '🔒 SUNSET';
     const du = dailyUnlocked(), db = $('#btnDaily'); db.disabled = !du; db.textContent = du ? 'DAILY LAKE' : '🔒 DAILY';
-    const td = dailyToday(), stk = dailyStreakNow(), parT = dailyPar();
-    $('#dailyNote').textContent = !du ? 'Clear Round 2 to open the Daily Lake' : td ? (td.medal ? MEDALS[td.medal].split(' ')[0] + ' ' : '') + 'Today’s best ' + td.best + ((td.medal || 0) < 3 ? ' · gold at ' + Math.round(parT * 1.3) : '') + (stk >= 2 ? ' · ' + stk + '-day streak' : '') : (stk >= 2 ? 'New lake today! Keep your ' + stk + '-day streak' : 'A new lake every day · par ' + parT);
+    // one quiet line: what you have to chase, or what opens next
+    const td = dailyToday(), stk = dailyStreakNow(), parts = [];
+    if (save.sunsetBest) parts.push('Sunset best ' + fmt(save.sunsetBest));
+    if (stk >= 2) parts.push('Daily ' + stk + '-day streak'); else if (td) parts.push('Daily best ' + fmt(td.best));
+    $('#dailyNote').textContent = parts.length ? parts.join(' · ') : !du ? 'Clear Round 1 to open the Daily Lake' : !su ? 'Clear Round 3 to open Sunset' : 'A new Daily Lake every day';
     refreshSndButtons();
   }
+  const fmt = (n) => Math.round(n).toLocaleString('en-US');
   function refreshSndButtons() {
-    $('#btnSfx').textContent = Snd.sfxOn ? 'SOUND ON' : 'SOUND OFF'; $('#btnMus').textContent = Snd.musicOn ? 'MUSIC ON' : 'MUSIC OFF';
-    $('#pSfx').textContent = $('#btnSfx').textContent; $('#pMus').textContent = $('#btnMus').textContent;
+    $('#pSfx').textContent = Snd.sfxOn ? 'SOUND ON' : 'SOUND OFF'; $('#pMus').textContent = Snd.musicOn ? 'MUSIC ON' : 'MUSIC OFF';
+    // title: two small icon toggles in the corner
+    [['#btnSfx', Snd.sfxOn, 'Sound'], ['#btnMus', Snd.musicOn, 'Music']].forEach(([id, on, nm]) => { const b = $(id); b.classList.toggle('off', !on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.setAttribute('aria-label', nm + (on ? ' on' : ' off')); });
     $('#btnSound').classList.toggle('off', !Snd.sfxOn && !Snd.musicOn);
     $('#sndWaves').style.display = (!Snd.sfxOn && !Snd.musicOn) ? 'none' : '';
   }
@@ -1079,7 +1101,7 @@
 
   function setLight(name) { S.light = name; Snd.setLight(name); }
   function resetWorld() {
-    S.ev = null; S.decoys = []; S.boats = []; S.rings = []; S.parts = []; S.pops = []; S.flashes = []; S.pols = []; S.snapQ = []; S.bubbles = []; S.lastSpot = null; S.shake = 0;
+    S.ev = null; S.decoys = []; S.boats = []; S.rings = []; S.parts = []; S.pops = []; S.flashes = []; S.pols = []; S.snapQ = []; S.bubbles = []; S.flys = []; S.filmPend = 0; S.assignFlash = 0; S.lastSpot = null; S.shake = 0;
   }
   function enterAttract() {
     resetWorld(); S.paused = false; S.R = ATTRACT; S.attract = true; S.mode = 'campaign'; S.phase = 'attract';
@@ -1087,10 +1109,11 @@
     setLight(lt === 'night' ? 'dusk' : lt); S.wxT = { fog: 0, chop: 0.1 }; S.wx = { fog: 0, chop: 0.1 };
     S.nextSight = 2.2; S.nextDecoy = 4; S.decoysOK = true; S.queue = []; S.film = 0; S.hudDirty = true;
   }
+  const PRO_TGT = [1500, 1420, 1870, 1680, 2200, 2070, 2330, 2530]; // 0.8× the good test bot's PRO average
   function proUnlocked(i) { return !!(save.rounds[i] && save.rounds[i].stars >= 3); }
   function proRound(i) {
     const B = ROUNDS[i];
-    return Object.assign({}, B, { name: B.name + ' PRO', spd: B.spd * 1.15, warn: B.warn * 0.85, decoy: [B.decoy[0] * 0.8, B.decoy[1] * 0.8], mimic: B.mimic || (i >= 2 ? [10, 15] : null), film: Math.max(7, B.film - 1), target: Math.max(Math.round(B.target * 1.3 / 10) * 10, i === 0 ? 480 : 0), shy: Math.min(0.45, (B.shy || 0.12) + 0.12), fixed: null, lm: ['light', 'ferry'].slice(0, 1 + (i >= 3 ? 1 : 0)), bomb: Math.max(1, B.bomb || 0) });
+    return Object.assign({}, B, { name: B.name + ' PRO', spd: B.spd * 1.15, warn: B.warn * 0.85, decoy: [B.decoy[0] * 0.8, B.decoy[1] * 0.8], mimic: B.mimic || (i >= 2 ? [10, 15] : null), film: Math.max(7, B.film - 1), target: PRO_TGT[i], shy: Math.min(0.45, (B.shy || 0.12) + 0.12), fixed: null, lm: ['light', 'ferry'].slice(0, 1 + (i >= 3 ? 1 : 0)), bomb: Math.max(1, B.bomb || 0) });
   }
   function startRound(i, pro) {
     i = clamp(i | 0, 0, ROUNDS.length - 1);
@@ -1104,26 +1127,27 @@
     S.assign = ASSIGN[i] || null; S.assignDone = false; S.assignN = 0; goalsReset('campaign', i, pro);
     setLight(R.light); S.wxT = { fog: R.fog, chop: R.chop }; S.wx = { fog: R.fog, chop: R.chop };
     S.tut = !save.tut && i === 0;
-    S.decoysOK = i > 0 || save.tut === true; S.nextSight = S.tut ? 0.8 : 1.2; S.nextDecoy = rr(R.decoy);
-    S.phase = 'intro'; S.introT = 1.1; S.endT = 0;
+    S.decoysOK = i > 0 || save.tut === true; S.nextSight = S.tut ? 0.3 : 0.9; S.nextDecoy = rr(R.decoy);
+    S.phase = 'intro'; S.introT = S.tut ? 1.1 : 1.4; S.endT = 0;
     el.score.textContent = '0';
     go('play'); clearToasts();
-    toast((pro ? 'PRO ' : 'ROUND ') + (i + 1) + ' · ' + R.name.replace(' PRO', ''), R.n + ' sightings · ' + R.film + ' shots' + (S.assign ? ' · 📰 ' + S.assign.t : ''));
-    if (!sparkleOn() && (pro || i === 4)) toast(pro ? 'PRO: NO SPARKLE' : 'NO MORE SPARKLE', 'Read the pose: the wink, all 3 humps up, the tail held high');
+    toast((pro ? 'PRO ' : 'ROUND ') + (i + 1) + ' · ' + R.name.replace(' PRO', ''), R.n + ' sightings · ' + R.film + ' shots');
+    const sparkKey = pro ? 'proSpark' : 'noSpark'; // taught once, not every time
+    if (!sparkleOn() && (pro || i === 2) && !save.told[sparkKey]) { save.told[sparkKey] = 1; persist(); toast(pro ? 'PRO: NO SPARKLE' : 'NO MORE SPARKLE', 'Read the pose: the wink, all 3 humps up, the tail held high'); }
     Snd.unlock(); Snd.blip();
   }
   function startSunset() {
-    const R = { name: 'Sunset Session', light: 'sunset', shy: 0.15, mimic: [10, 16], gap: [1.9, 3.1], spd: 1.2, warn: 0.9, decoy: [3.6, 6], dk: { duck: 2, log: 2, loon: 2, swimmer: 2, kayak: 2, wave: 2 }, kinds: { neck: 3, humps: 3, tail: 3 }, fog: 0, chop: 0.25, target: 0 };
+    const R = { name: 'Sunset Session', light: 'sunset', shy: 0.15, mimic: [10, 16], gap: [0.8, 1.3], spd: 1.2, warn: 0.9, decoy: [3.6, 6], dk: { duck: 2, log: 2, loon: 2, swimmer: 2, kayak: 2, wave: 2 }, kinds: { neck: 3, humps: 3, tail: 3 }, fog: 0, chop: 0.25, target: 0 };
     resetWorld(); initTourists();
     S.mode = 'sunset'; S.round = 99; S.R = R; S.attract = false; S.paused = false; S.assign = null; S.assignDone = false; S.pro = false; goalsReset('sunset', 99, false);
-    S.film = 10; S.filmMax = 10; S.score = 0; S.shownScore = 0; S.streak = 0; S.bestStreak = 0; S.photos = []; S.newSights = [];
+    S.film = 8; S.filmMax = 8; S.score = 0; S.shownScore = 0; S.streak = 0; S.bestStreak = 0; S.photos = []; S.newSights = [];
     S.queue = [wpick({ neck: 3, humps: 3, tail: 2 })]; S.sights = []; S.sightsDone = 0; S.sightN = 0; S.bestPhoto = null;
     setLight('sunset'); S.wxT = { fog: 0, chop: 0.25 }; S.wx = { fog: 0, chop: 0.25 };
-    S.tut = false; S.decoysOK = true; S.nextSight = 1.6; S.nextDecoy = 4;
+    S.tut = false; S.decoysOK = true; S.nextSight = 1.0; S.nextDecoy = 4; S.duskTold = false;
     S.phase = 'intro'; S.introT = 1.4; S.sunsetWxT = 20;
     el.score.textContent = '0';
     go('play'); clearToasts();
-    toast('SUNSET SESSION', 'Keep shooting. 5★ earns film; 4★ too when you’re low.');
+    toast('SUNSET SESSION', 'Shoot till the film runs out. A 4★ or better wins the frame back.');
     Snd.unlock(); Snd.blip();
   }
   // ---------- daily lake: same light, weather and lineup for everyone on a given date ----------
@@ -1158,13 +1182,14 @@
       last = { fx, fy }; return Object.assign({ kind, fx, fy }, flag[i] || {});
     });
     const dk = [{ duck: 2, log: 2, loon: 2, swimmer: 2 }, { log: 2, loon: 2, kayak: 3, swimmer: 1 }, { duck: 1, log: 2, loon: 2, wave: 3 }][(r() * 3) | 0];
-    return { key, name: 'Daily Lake', light, fog: wx[0], chop: wx[1], film: 11, n, q, req, shy: 0.2, mimic: [12, 18], gap: [1.6, 2.7], spd: 1.2, warn: 0.95, decoy: [3.2, 5.5], dk, kinds: { neck: 3, humps: 3, tail: 3 }, target: 0, blurb: DAILY_LIGHTS[light] };
+    return { key, name: 'Daily Lake', light, fog: wx[0], chop: wx[1], film: 11, n, q, req, shy: 0.2, mimic: [12, 18], gap: [0.6, 1.1], spd: 1.2, warn: 0.95, decoy: [3.2, 5.5], dk, kinds: { neck: 3, humps: 3, tail: 3 }, target: 0, blurb: DAILY_LIGHTS[light] };
   }
   // daily medals against a par: bronze 60% of par, silver at par, gold at 118%
   const MEDALS = ['', '🥉 BRONZE', '🥈 SILVER', '🥇 GOLD'];
-  function dailyPar(R) { R = R || dailyConfig(todayKey()); const W = { neck: 135, humps: 135, tail: 105 }; return Math.round(R.q.reduce((a, it) => a + (W[it.kind] || 120), 0) / 10) * 10; } // tails are the hard ones, so a tail-heavy lake has a lower bar
+  function dailyPar(R) { R = R || dailyConfig(todayKey()); const W = { neck: 170, humps: 170, tail: 130 }; return Math.round(R.q.reduce((a, it) => a + (W[it.kind] || 150), 0) / 10) * 10; } // tails are the hard ones, so a tail-heavy lake has a lower bar
   function dailyMedal(score, par) { return score >= par * 1.3 ? 3 : score >= par ? 2 : score >= par * 0.6 ? 1 : 0; }
-  function dailyUnlocked() { return save.maxRound >= 2; }
+  function dailyUnlocked() { return save.maxRound >= 1; }
+  function sunsetUnlocked() { return save.maxRound >= 3; }
   function dailyToday() { const k = todayKey(); return save.daily && save.daily.key === k ? save.daily : null; }
   function dailyStreakNow() { // a streak only counts if you played today or yesterday
     const d = save.daily; if (!d || !d.last) return 0;
@@ -1185,31 +1210,53 @@
     toast('DAILY LAKE · ' + prettyDate(key), R.blurb + ' · ' + R.n + ' sightings · ' + R.film + ' shots');
     Snd.unlock(); Snd.blip();
   }
+  const SUN_DUSK = 22; // Sunset: from here only a 5★ wins film back, so a good run has a real middle
   function sunsetDifficulty() {
     const n = S.sightN, R = S.R;
     S.goals.forEach((G, i) => { if (G.sight && !S.gdone[i]) { S.gprog[i] = n; if (n >= G.sight) goalHit(i); } });
-    R.spd = Math.min(2.3, 1.2 + n * 0.05); R.warn = Math.max(0.55, 0.9 - n * 0.015);
-    R.gap = [Math.max(1.0, 1.9 - n * 0.02), Math.max(1.8, 3.1 - n * 0.03)];
-    if (n >= 4 && n % 5 === 0 && S.sunsetWxT !== n) { S.sunsetWxT = n; const w = pick(SUNSET_WX); S.wxT = { fog: w[0], chop: w[1] }; if (n === 20 && S.light !== 'dusk') setLight('dusk'); }
+    R.spd = Math.min(2.4, 1.2 + n * 0.06); R.warn = Math.max(0.5, 0.9 - n * 0.02);
+    R.gap = [Math.max(0.4, 0.8 - n * 0.016), Math.max(0.7, 1.3 - n * 0.024)];
+    if (n >= 4 && n % 5 === 0 && S.sunsetWxT !== n) { S.sunsetWxT = n; const w = pick(SUNSET_WX); S.wxT = { fog: w[0], chop: w[1] }; }
+    if (n === SUN_DUSK && S.light !== 'dusk') setLight('dusk');
+    if (n === SUN_DUSK + 1 && !S.duskTold && !S.headless) { S.duskTold = true; toast('DUSK FALLS', 'Now only 5★ photos win film back'); }
   }
 
   function checkRoundEnd(dt) {
-    if (S.phase === 'intro') { S.introT -= dt; if (S.introT <= 0) S.phase = 'play'; return; }
+    if (S.phase === 'intro') { S.introT -= dt; if (S.introT <= 0) { S.phase = 'play'; S.hudDirty = true; } return; }
     if (S.phase === 'play') {
       if (S.mode === 'sunset') sunsetDifficulty();
       const noMore = S.mode !== 'sunset' && S.queue.length === 0 && !S.ev && !S.encoreNext;
       const noFilm = S.film <= 0 && !S.snapQ.length;
-      if (noMore || noFilm) { const lp = S.photos[S.photos.length - 1]; S.phase = 'ending'; S.endT = (lp && lp.champ && S.t - 0 > 0 && S.pols.length) ? 2.8 : 1.4; }
+      if (noMore || noFilm) { const lp = S.photos[S.photos.length - 1]; S.phase = 'ending'; S.endT = (lp && lp.champ && S.t - 0 > 0 && S.pols.length) ? 2.0 : 1.4; }
     } else if (S.phase === 'ending') {
       S.endT -= dt;
       if (S.endT <= 0) { S.phase = 'done'; finishRound(); }
     }
   }
   // round stars: ★ pass, ★ big score (2× target), ★ the Lake Gazette front page
-  const BIG = [2.3, 2.4, 2.5, 2.2, 2.05, 1.85, 1.85, 1.8], PRO_BIG = [2.2, 2.1, 1.9, 1.9, 1.8, 1.4, 1.4, 1.3]; // measured against the bot sweep: the big star is for a patient expert, not a perfect machine // early rounds are generous to pass, so the big-score star asks more of them
-  function bigMult() { return S.pro ? (PRO_BIG[S.round] || 1.5) : (BIG[S.round] || 1.6); }
-  const bigAt = (i, pro) => Math.ceil((pro ? proRound(i).target : ROUNDS[i].target) * (pro ? PRO_BIG[i] : BIG[i]));
+  // the big-score star: about 0.92× what the GOOD test bot averages (12 px, aim 0.88; never under 1.25× the target), so a strong human earns it. Measured, see UPGRADE-2026-11-15.md
+  const BIG_AT = [900, 1520, 1870, 1900, 2190, 2130, 2450, 2730], PRO_BIG_AT = [1660, 1700, 2270, 1960, 2410, 2360, 2530, 2820]; // PRO: 0.92× the good bot too, so the 1.25× floor decides
+  const bigAt = (i, pro) => { const tg = pro ? proRound(i).target : ROUNDS[i].target; return Math.max(Math.ceil(tg * 1.25 / 10) * 10, (pro ? PRO_BIG_AT : BIG_AT)[i] || 0); };
+  function bigMult() { return bigAt(S.round, S.pro) / Math.max(1, targetOf()); }
   function roundStars(score, tg, scoop) { return score < tg ? 0 : 1 + (score >= tg * bigMult() ? 1 : 0) + (scoop ? 1 : 0); }
+  // the single line under the photos: what the next star asks for, or why the roll fell short
+  function nextLine(camp, daily, pass, st, tg) {
+    if (camp && !pass) {
+      const missed = S.sights.filter(x => x.status === 'missed' && !x.shot).length, need = 'Need ' + fmt(tg - S.score) + ' more. ';
+      if (missed >= 3) return need + missed + ' got away unshot: snap every one.';
+      const h = {}; S.photos.forEach(p => { if (p.champ && p.stars < 4 && p.hint) h[p.hint] = (h[p.hint] || 0) + 1; });
+      const tip = Object.keys(h).sort((a, b) => h[b] - h[a])[0];
+      return need + (tip || (sparkleOn() ? 'Wait for the sparkle, tap his middle.' : 'Snap at the top of the pose, tap his middle.'));
+    }
+    if (camp) {
+      if (S.score < tg * bigMult()) return 'Next ★: big score ' + fmt(Math.ceil(tg * bigMult()));
+      if (!S.assignDone && S.assign) return 'Next ★: 📰 ' + S.assign.t;
+      return '';
+    }
+    if (daily) { const par = dailyPar(S.R), md = dailyMedal(S.score, par); return md < 3 ? fmt(Math.ceil([par * 0.6, par, par * 1.3][md] - S.score)) + ' more for ' + ['bronze', 'silver', 'gold'][md] : 'Gold! New lake tomorrow.'; }
+    const nr = SUNSET_RANKS.find(a => a[0] > S.score);
+    return nr ? 'Next rank: ' + nr[1] + ' at ' + fmt(nr[0]) : '';
+  }
   function finishRound() {
     S.snapQ.length = 0; S.lastRound = S.round; S.lastPro = !!S.pro;
     if (S.mode === 'campaign' && S.assign && S.assign.end && !S.assignDone && S.assign.end()) assignDone(S.bestPhoto);
@@ -1227,10 +1274,13 @@
       save.pro[S.round] = rec;
     } else if (camp) {
       const rec = save.rounds[S.round] || { best: 0, stars: 0 };
-      if (S.score > rec.best) { rec.best = S.score; if (S.score >= tg * 0.5) badges.push('NEW BEST'); }
-      if (st > rec.stars) { rec.stars = st; if (st >= 3) badges.push('PRO ' + (S.round + 1) + ' UNLOCKED'); }
+      if (S.score > rec.best) { if (rec.best > 0 && pass) S.newBest = true; rec.best = S.score; }
+      if (st >= 3 && !(save.rounds[S.round] && save.rounds[S.round].stars >= 3)) S.proOpen = true;
+      if (st > rec.stars) rec.stars = st;
       save.rounds[S.round] = rec;
+      const du0 = dailyUnlocked(), su0 = sunsetUnlocked();
       if (pass) save.maxRound = Math.max(save.maxRound, S.round + 1);
+      if (!su0 && sunsetUnlocked()) S.modeOpen = 'SUNSET UNLOCKED'; else if (!du0 && dailyUnlocked()) S.modeOpen = 'DAILY LAKE UNLOCKED';
     } else if (daily) {
       let d = save.daily && save.daily.key === S.dailyKey ? save.daily : { key: S.dailyKey, best: 0, plays: 0, streak: save.daily ? save.daily.streak : 0, last: save.daily ? save.daily.last : null };
       if (d.last !== S.dailyKey) { d.streak = d.last && dayNum(S.dailyKey) - dayNum(d.last) === 1 ? d.streak + 1 : 1; d.last = S.dailyKey; }
@@ -1238,50 +1288,57 @@
       if (S.reqDone && !d.reqDone) { d.reqDone = true; save.reqs = (save.reqs || 0) + 1; badges.unshift('📷 REQUEST DONE'); }
       if (S.score > d.best) { if (d.best > 0) badges.push('TODAY’S BEST'); d.best = S.score; }
       const md = dailyMedal(S.score, dailyPar(S.R));
-      if (md > (d.medal || 0)) { d.medal = md; badges.unshift(MEDALS[md]); }
+      if (md > (d.medal || 0)) d.medal = md; // the medal is the headline, not a badge
       save.dailyMedals = save.dailyMedals || { 1: 0, 2: 0, 3: 0 };
       if (md && !d['got' + md]) { d['got' + md] = true; save.dailyMedals[md] = (save.dailyMedals[md] || 0) + 1; }
       save.daily = d;
       if (d.streak >= 2) badges.push('DAY STREAK ' + d.streak);
     } else {
-      const rk0 = sunsetRank(save.sunsetBest);
-      if (S.score > save.sunsetBest) { save.sunsetBest = S.score; badges.push('NEW HIGH SCORE'); }
-      if (sunsetRank(S.score) !== rk0 && S.score > 0) badges.unshift('RANK: ' + sunsetRank(S.score).toUpperCase());
+      S.prevBest = save.sunsetBest; S.newBest = S.score > save.sunsetBest && S.score > 0;
+      if (S.score > save.sunsetBest) save.sunsetBest = S.score;
       save.sunsetSights = Math.max(save.sunsetSights || 0, S.sightN);
     }
-    if (S.bestPhoto && save.album.length && save.album[0].id === S.bestPhoto.id) badges.push('BEST SHOT EVER');
-    if (camp && S.assignDone) badges.unshift('📰 SCOOP!');
-    if (S.newGold) { badges.unshift('✨ GOLDEN CHAMP'); S.newGold = false; }
-    S.newSights.forEach(k => badges.push('NEW: ' + CHAMP_NAMES[k]));
-    S.newShots.forEach(t => badges.push('NEW SHOT: ' + STYLES[t].n.toUpperCase()));
-    if (S.bestStreak >= 4) badges.push('STREAK ×' + S.bestStreak);
-    if (S.chainBest >= 2) badges.push('ENCORE CHAIN ×' + S.chainBest);
-    if (S.goalsNew.length) badges.unshift('◆ ' + S.goalsNew.length + ' MASTERY GOAL' + (S.goalsNew.length > 1 ? 'S' : ''));
+    // ONE badge at most: NEW BEST > a mode unlocked > FRONT PAGE > a new sighting > PRO unlocked > the rest
+    const pri = [];
+    if (S.newBest && !(S.mode === 'sunset')) pri.push('NEW BEST');
+    if (S.modeOpen) pri.push(S.modeOpen);
+    if (camp && S.assignDone && !S.pro) pri.push('📰 FRONT PAGE');
+    S.newSights.forEach(k => pri.push('NEW: ' + CHAMP_NAMES[k]));
+    if (S.proOpen) pri.push('PRO ' + (S.round + 1) + ' UNLOCKED');
+    if (S.newGold) pri.push('✨ GOLDEN CHAMP');
+    const allB = pri.concat(badges);
+    if (S.goalsNew.length) allB.push('◆ ' + S.goalsNew.length + ' MASTERY GOAL' + (S.goalsNew.length > 1 ? 'S' : ''));
+    S.newShots.forEach(t => allB.push('NEW SHOT: ' + STYLES[t].n.toUpperCase()));
+    S.newGold = false; S.newBest = false; S.modeOpen = null; S.proOpen = false;
     persist();
-    // fill the result screen
-    $('#rsTitle').textContent = camp ? (pass ? (S.round === 7 ? 'LEGENDARY!' : 'ROLL DEVELOPED!') : 'NOT QUITE…') : daily ? (MEDALS[dailyMedal(S.score, dailyPar(S.R))] || 'DAILY LAKE') : 'SESSION OVER';
-    $('#rsSub').textContent = camp ? (S.pro ? 'PRO ' : 'Round ') + (S.round + 1) + ' · ' + S.R.name.replace(' PRO', '') : daily ? prettyDate(S.dailyKey) + ' · ' + S.R.blurb + ' · new lake tomorrow' : 'Sighting ' + S.sightN + ' reached · ' + sunsetRank(S.score);
+    // fill the result screen: title, stars, score, the photos, one badge, one line about the next star, buttons
+    const sunset = S.mode === 'sunset', rkName = sunsetRank(S.score), beatBest = sunset && S.prevBest > 0 && S.score > S.prevBest; // the first-ever run headlines its rank, not "NEW BEST"
+    $('#rsTitle').textContent = camp ? (pass ? (S.round === 7 ? 'LEGENDARY!' : 'ROLL DEVELOPED!') : 'NOT QUITE…') : daily ? (MEDALS[dailyMedal(S.score, dailyPar(S.R))] || 'DAILY LAKE') : (beatBest ? 'NEW BEST!' : rkName.toUpperCase());
+    $('#rsSub').textContent = daily ? prettyDate(S.dailyKey) + ' · ' + S.R.blurb : sunset ? (beatBest ? rkName + ' · ' : '') + 'Reached sighting ' + S.sightN : '';
+    $('#rsSub').style.display = camp ? 'none' : '';
     $('#rsStars').innerHTML = camp ? [0, 1, 2].map(i => '<span class="' + (i < st ? 'on' : '') + '" style="animation-delay:' + (0.3 + i * 0.22) + 's">★</span>').join('') : '';
     $('#rsStars').style.display = camp ? '' : 'none';
+    // kept in the DOM for the tests and screen readers, hidden by CSS: the star legend and the mastery list
     $('#rsWhy').innerHTML = camp ? [[S.score >= tg, 'Cleared'], [S.score >= tg * bigMult(), 'Big score ' + Math.ceil(tg * bigMult())], [S.assignDone, '📰 ' + (S.assign ? S.assign.t : 'Front page')]].map(a => '<span class="' + (a[0] ? 'y' : 'n') + '">' + (a[0] ? '★ ' : '☆ ') + escapeHtml(a[1]) + '</span>').join(' ') : '';
     { const a = save.goals[S.gkey] || [false, false, false], total = S.goals.length;
       $('#rsGoals').innerHTML = total ? S.goals.map((G, i) => { const now = S.gdone[i], was = a[i] && !now; const cls = now ? 'new' : was ? 'old' : 'no'; const pr = !now && !was && (G.n > 1 || G.sight || G.run5) ? ' (' + Math.min(S.gprog[i], G.n || G.sight || G.run5) + '/' + (G.n || G.sight || G.run5) + ')' : ''; return '<span class="' + cls + '">' + (now ? '◆ ' : was ? '◆ ' : '◇ ') + escapeHtml(G.t) + pr + '</span>'; }).join('') : (daily && S.R.req ? '<span class="' + (S.reqDone ? 'new' : 'no') + '">' + (S.reqDone ? '◆ ' : '◇ ') + 'Request: ' + escapeHtml(S.R.req.t) + '</span>' : '');
       $('#rsGoalsH').style.display = $('#rsGoals').innerHTML ? '' : 'none'; $('#rsGoalsH').textContent = daily ? 'TODAY’S REQUEST' : 'MASTERY GOALS · ' + rankOf(medalCount()) + ' ◆' + medalCount() + '/' + MEDALS_TOTAL; }
-    $('#rsTgt').textContent = camp ? '/ ' + tg + ' needed' : daily ? '· par ' + dailyPar(S.R) + ' · today’s best ' + save.daily.best : '(best ' + save.sunsetBest + ')';
-    let note = S.filmBonus ? 'Includes +' + S.filmBonus + ' for ' + (S.filmBonus / 8) + ' unused shot' + (S.filmBonus === 8 ? '' : 's') : '';
-    if (camp && !pass) note = (tg - S.score <= tg * 0.25 ? 'So close! Only ' + (tg - S.score) + ' points short.' : 'Need ' + (tg - S.score) + ' more. ' + (sparkleOn() ? 'Wait for the sparkle, tap his middle.' : 'Snap at the top of the pose, tap his middle.')) + (note ? ' ' + note + '.' : '');
-    if (daily) { const par = dailyPar(S.R), md = dailyMedal(S.score, par); if (md < 3) { const nx = [par * 0.6, par, par * 1.3][md]; note = (note ? note + '. ' : '') + Math.ceil(nx - S.score) + ' more for ' + ['bronze', 'silver', 'gold'][md] + '.'; } }
-    $('#rsBonus').textContent = note;
+    $('#rsTgt').textContent = camp ? '/ ' + fmt(tg) : daily ? '/ par ' + dailyPar(S.R) : S.score >= save.sunsetBest ? '' : '· best ' + fmt(save.sunsetBest);
+    $('#rsBonus').textContent = nextLine(camp, daily, pass, st, tg);
+    $('#rsBonus').style.display = $('#rsBonus').textContent ? '' : 'none';
     countUp($('#rsScore'), S.score);
-    const top = S.photos.filter(p => p.champ && p.stars > 0 && p.thumb).sort((a, b) => b.score - a.score).slice(0, H < 720 ? 3 : 4);
-    $('#sheet').innerHTML = top.length ? top.map((p, i) => pcHtml(p, i, p === S.bestPhoto && p.stars >= 3)).join('') : '<div class="emptyNote">No keepers on this roll.</div>';
-    $('#rsBadges').innerHTML = badges.slice(0, 4).map(b => '<span class="badge">' + b + '</span>').join(' ');
+    // the photos: best four, the very best one a size up in the middle-left slot
+    const top = S.photos.filter(p => p.champ && p.stars > 0 && p.thumb).sort((a, b) => b.score - a.score).slice(0, H < 660 ? 3 : 4);
+    const best0 = top[0]; if (top.length >= 2) { top.shift(); top.splice(1, 0, best0); }
+    $('#sheet').innerHTML = top.length ? top.map((p, i) => pcHtml(p, i, p === S.bestPhoto && p.stars >= 3, p === best0 && top.length > 1)).join('') : '<div class="emptyNote">No keepers on this roll.</div>';
+    $('#rsBadges').innerHTML = (camp && !pass ? [] : allB.slice(0, 1)).map( // a failed roll gets no badge, just the line about what to fix
+b => '<span class="badge">' + b + '</span>').join(' ');
     const nx = $('#rsNext');
     if (camp && S.pro) { nx.style.display = ''; nx.textContent = pass && S.round < ROUNDS.length - 1 && proUnlocked(S.round + 1) ? 'NEXT PRO' : 'PRO AGAIN'; nx.dataset.act = nx.textContent === 'NEXT PRO' ? 'pro-next' : 'pro-retry'; }
     else if (camp && pass && S.round < ROUNDS.length - 1) { nx.style.display = ''; nx.textContent = 'NEXT ROUND'; nx.dataset.act = 'next'; }
     else if (camp && pass) { nx.style.display = ''; nx.textContent = 'SUNSET SESSION'; nx.dataset.act = 'sunset'; }
     else if (daily) { nx.style.display = ''; nx.textContent = 'ONE MORE TRY'; nx.dataset.act = 'daily'; }
-    else if (!camp) { nx.style.display = ''; nx.textContent = 'NEW ROLL'; nx.dataset.act = 'sunset'; }
+    else if (!camp) { nx.style.display = ''; nx.textContent = 'RETRY'; nx.dataset.act = 'sunset'; }
     else { nx.style.display = ''; nx.textContent = 'TRY AGAIN'; nx.dataset.act = 'retry'; }
     $('#rsRetry').style.display = nx.dataset.act === 'retry' || nx.dataset.act === 'pro-retry' || !camp ? 'none' : '';
     if (pass) Snd.clear(); else Snd.fail();
@@ -1302,9 +1359,9 @@
     };
     requestAnimationFrame(stepFn);
   }
-  function pcHtml(p, i, gold) {
+  function pcHtml(p, i, gold, big) {
     const stars = '<b>' + '★'.repeat(p.stars) + '</b>' + '★'.repeat(5 - p.stars);
-    return '<div class="pc' + (gold ? ' gold' : '') + '" data-id="' + (p.id) + '" style="--r:' + (((i * 37) % 9) - 4) + 'deg;--d:' + (i * 0.08) + 's"><i class="tape"></i><img alt="" src="' + p.thumb + '"><div class="stars">' + stars + '</div>' + (p.rare ? '<span class="rare">RARE</span>' : '') + '</div>';
+    return '<div class="pc' + (gold ? ' gold' : '') + (big ? ' big' : '') + '" data-id="' + (p.id) + '" style="--r:' + (((i * 37) % 9) - 4) + 'deg;--d:' + (i * 0.08) + 's"><i class="tape"></i><img alt="" src="' + p.thumb + '"><div class="stars">' + stars + '</div>' + (p.rare ? '<span class="rare">RARE</span>' : '') + '</div>';
   }
 
   // ---------- album screen ----------
@@ -1391,10 +1448,10 @@
       b.addEventListener('click', () => { if (unlocked) { Snd.unlock(); startRound(i); } });
       g.appendChild(b);
     });
-    const sb = document.createElement('button'); sb.className = 'tile' + (save.maxRound >= ROUNDS.length ? '' : ' locked'); sb.style.gridColumn = '1 / -1';
+    const sb = document.createElement('button'); sb.className = 'tile' + (sunsetUnlocked() ? '' : ' locked'); sb.style.gridColumn = '1 / -1';
     const L = Art.LIGHTS.sunset; sb.style.background = 'linear-gradient(170deg,' + L.skyTop + ',' + L.skyBot + ' 40%,' + L.wTop + ' 42%,' + L.wBot + ')';
-    sb.innerHTML = '<div class="n">∞</div><div class="nm">Sunset Session · endless' + (save.sunsetBest ? ' · best ' + save.sunsetBest + ' · ' + sunsetRank(save.sunsetBest) : '') + ' <span class="gm">' + goalDots('s') + '</span></div>' + (save.maxRound >= ROUNDS.length ? '' : '<div class="lk">🔒</div>');
-    sb.addEventListener('click', () => { if (save.maxRound >= ROUNDS.length) { Snd.unlock(); startSunset(); } });
+    sb.innerHTML = '<div class="n">∞</div><div class="nm">Sunset Session · endless' + (save.sunsetBest ? ' · best ' + save.sunsetBest + ' · ' + sunsetRank(save.sunsetBest) : '') + ' <span class="gm">' + goalDots('s') + '</span></div>' + (sunsetUnlocked() ? '' : '<div class="as">Clear Round 3 to open</div><div class="lk">🔒</div>');
+    sb.addEventListener('click', () => { if (sunsetUnlocked()) { Snd.unlock(); startSunset(); } });
     g.appendChild(sb);
   }
 
@@ -1403,6 +1460,9 @@
     if (S.screen !== 'play') return;
     S.paused = true; if (S.snapQ.length) { S.film += S.snapQ.length; S.snapQ.length = 0; S.hudDirty = true; } // a shot that never developed is refunded
     $('#pauseSub').textContent = S.mode === 'sunset' ? 'Sunset Session' : S.mode === 'daily' ? 'Daily Lake · ' + prettyDate(S.dailyKey) : (S.pro ? 'PRO ' : 'Round ') + (S.round + 1) + ' · ' + S.R.name;
+    // the roll's job lives here (and on the intro), not on the lake
+    const job = S.mode === 'daily' && S.req ? '📷 ' + S.req.t + (S.reqDone ? ' ✓' : '') : S.assign ? '📰 ' + S.assign.t + (S.assignDone ? ' ✓' : S.assign.count ? ' (' + S.assignN + '/' + S.assign.count + ')' : '') : '';
+    $('#pauseJob').textContent = job; $('#pauseJob').style.display = job ? '' : 'none';
     go('pause');
   }
   function resume() { S.paused = false; go('play'); }
@@ -1454,7 +1514,7 @@
   on('#rdBack', () => go('title'));
   on('#tabN', () => { S.roundsPro = false; buildRounds(); }); on('#tabP', () => { S.roundsPro = true; buildRounds(); });
   on('#btnAlbum', showAlbum); on('#alBack', () => go(S.fromResult ? 'result' : 'title'));
-  on('#btnSunset', () => { S.roundsPro = true; buildRounds(); go('rounds'); });
+  on('#btnSunset', () => { if (sunsetUnlocked()) startSunset(); });
   on('#btnDaily', () => { if (dailyUnlocked()) startDaily(); });
   on('#btnSfx', () => { Snd.setSfx(!Snd.sfxOn); refreshSndButtons(); }); on('#btnMus', () => { Snd.setMusic(!Snd.musicOn); refreshSndButtons(); });
   on('#pSfx', () => { Snd.setSfx(!Snd.sfxOn); refreshSndButtons(); }); on('#pMus', () => { Snd.setMusic(!Snd.musicOn); refreshSndButtons(); });
@@ -1534,6 +1594,10 @@
       ctx.beginPath(); ctx.ellipse(r.x, r.y, r.r, r.r * r.flat, 0, 0, TAU); ctx.stroke();
     });
   }
+  function drawEvChamp(ev, aboveOnly) {
+    const bob = wobble(ev), p = poseNow(ev);
+    Art.drawChamp(ctx, { pose: p, x: ev.x, y: ev.y + bob, s: ev.s, dir: ev.dir, wl: ev.y + bob, tt: S.t, gold: ev.gold, rim: !ev.gold && (S.light === 'night' || S.light === 'dusk'), aboveOnly });
+  }
   function drawActors() {
     const list = [];
     S.boats.forEach(b => list.push({ y: b.y, f: () => Art.drawSailboat(ctx, b.x, b.y, b.s, b.dir, S.t) }));
@@ -1543,7 +1607,7 @@
       const bob = wobble(ev);
       if (ev.vx) list.push({ y: ev.y + 0.4, f: () => { const bk = ev.kind === 'humps' ? 46 : 30; Art.wake(ctx, ev.x - ev.dir * bk * ev.s, ev.y + bob + 1, ev.s, ev.dir, 34, 0.45 * clamp(Math.sin(Math.PI * ev.u) * 2, 0, 1)); } });
       if (ev.kind === 'tail' || ev.kind === 'breach') list.push({ y: ev.y + 0.6, f: () => drawMotionLines(ev, bob) });
-      list.push({ y: ev.y + 0.5, f: () => { const p = poseNow(ev); Art.drawChamp(ctx, { pose: p, x: ev.x, y: ev.y + bob, s: ev.s, dir: ev.dir, wl: ev.y + bob, tt: S.t, gold: ev.gold }); } });
+      list.push({ y: ev.y + 0.5, f: () => drawEvChamp(ev, false) });
     }
     list.sort((a, b) => a.y - b.y).forEach(o => o.f());
   }
@@ -1575,17 +1639,37 @@
   function drawStarParts() {
     S.parts.forEach(p => { if (!p.star) return; const a = clamp(1 - p.t / p.life, 0, 1); ctx.fillStyle = 'rgba(255,226,90,' + a.toFixed(2) + ')'; star5(ctx, p.x, p.y, p.r * 1.6); ctx.fill(); });
   }
+  // the viewfinder: four corner brackets of the real frame at the tap, so a snap feels like aiming a camera.
+  // Real-time, so they still animate through the hit-pause.
   function drawFlashes() {
+    const now = performance.now();
     S.flashes.forEach(f => {
-      const t = f.t, a = clamp(1 - t / 0.5, 0, 1), sc = 1 + 0.4 * Math.pow(1 - clamp(t / 0.1, 0, 1), 2);
+      const age = (now - f.rt) / 1000; if (age > 0.43 || age < 0) return;
+      const k = clamp(age / 0.09, 0, 1), sc = 1.18 - 0.18 * (1 - Math.pow(1 - k, 3));
+      const a = age < 0.25 ? 1 : 1 - (age - 0.25) / 0.18;
       const s = F * sc, x0 = f.x - s / 2, y0 = f.y - s / 2;
       ctx.save();
-      ctx.fillStyle = 'rgba(255,255,255,' + (0.7 * Math.pow(1 - clamp(t / 0.2, 0, 1), 1.5)).toFixed(3) + ')'; ctx.fillRect(x0, y0, s, s);
-      ctx.fillStyle = 'rgba(255,255,255,' + (0.18 * Math.pow(1 - clamp(t / 0.14, 0, 1), 2)).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H);
-      ctx.strokeStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')'; ctx.lineWidth = 3; ctx.lineCap = 'square';
-      const L = 18;
-      [[x0, y0, 1, 1], [x0 + s, y0, -1, 1], [x0, y0 + s, 1, -1], [x0 + s, y0 + s, -1, -1]].forEach(c => { ctx.beginPath(); ctx.moveTo(c[0] + c[2] * L, c[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(c[0], c[1] + c[3] * L); ctx.stroke(); });
-      ctx.fillStyle = 'rgba(255,60,50,' + a.toFixed(3) + ')'; ctx.beginPath(); ctx.arc(x0 + 10, y0 - 9, 3.4, 0, TAU); ctx.fill();
+      if (k < 1) { // a quick, soft flash; the brackets show through it
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.35 * (1 - k)).toFixed(3) + ')'; ctx.fillRect(x0, y0, s, s);
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.1 * (1 - k)).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H);
+      }
+      const L = 18, path = () => { ctx.beginPath(); [[x0, y0, 1, 1], [x0 + s, y0, -1, 1], [x0, y0 + s, 1, -1], [x0 + s, y0 + s, -1, -1]].forEach(c => { ctx.moveTo(c[0] + c[2] * L, c[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(c[0], c[1] + c[3] * L); }); };
+      ctx.globalAlpha = clamp(a, 0, 1); ctx.lineCap = 'square'; ctx.lineJoin = 'miter';
+      path(); ctx.strokeStyle = 'rgba(10,30,45,.6)'; ctx.lineWidth = 5; ctx.stroke();
+      ctx.strokeStyle = f.gold ? '#ffd23f' : '#fff'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.restore();
+    });
+  }
+  // a frame flying back into the film chip
+  function drawFlys() {
+    S.flys.forEach(f => {
+      if (f.t < 0) return;
+      const k = sm(f.t / 0.6), x = lerp(f.x0, f.x1, k), y = lerp(f.y0, f.y1, k) - Math.sin(Math.PI * k) * 50, sc = 1.5 - 0.6 * k;
+      ctx.save(); ctx.translate(x, y); ctx.rotate((1 - k) * 0.5); ctx.scale(sc, sc);
+      ctx.fillStyle = '#ffd23f'; ctx.strokeStyle = 'rgba(10,30,45,.8)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect(-8, -10, 16, 20, 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = 'rgba(10,30,45,.85)'; for (let j = 0; j < 3; j++) { ctx.fillRect(-6, -7 + j * 6, 2.2, 2.6); ctx.fillRect(3.8, -7 + j * 6, 2.2, 2.6); }
+      ctx.fillStyle = 'rgba(10,30,45,.35)'; ctx.fillRect(-2.5, -8, 5, 16);
       ctx.restore();
     });
   }
@@ -1633,6 +1717,8 @@
     drawBirds(); drawWhitecaps();
     drawSurfacing(); drawRings(); drawActors(); drawParts();
     Art.drawFog(ctx, S.wx.fog, S.t);
+    // fog is mood, not a blindfold: Champ himself is never more than 25% fogged
+    if (S.ev && S.ev.state === 'up' && S.wx.fog > 0.02) { const fc = Art.fogCover(S.wx.fog, S.ev.y); if (fc > 0.25) { ctx.globalAlpha = 1 - 0.25 / fc; drawEvChamp(S.ev, true); ctx.globalAlpha = 1; } }
     const L = Art.LIGHTS[S.light];
     if (L.tint) { ctx.fillStyle = L.tint; ctx.fillRect(0, 0, W, H); }
     ctx.restore();
@@ -1649,8 +1735,12 @@
     }
     drawTourists();
     if (L.tint) { ctx.fillStyle = L.tint; ctx.fillRect(0, BY - 32, W, H); }
+    // the boardwalk is the frame, not the picture: knock its colour and brightness down
+    ctx.save(); ctx.globalCompositeOperation = 'saturation'; ctx.fillStyle = 'rgba(128,128,128,0.45)'; ctx.fillRect(0, BY - 32, W, H - BY + 32); ctx.restore();
+    ctx.fillStyle = 'rgba(20,30,45,.28)'; ctx.fillRect(0, BY - 32, W, H - BY + 32);
+    drawBubbles();
     drawTutorial();
-    drawStarParts(); drawPops(); drawFlashes();
+    drawStarParts(); drawPops(); drawFlashes(); drawFlys();
     for (let i = S.pols.length - 1; i >= 0; i--) drawPola(S.pols[i], i);
   }
 
@@ -1679,7 +1769,7 @@
     return { id: ev.id, kind: ev.kind, state: ev.state, u: +ev.u.toFixed(3), t: +ev.t.toFixed(2), D: +ev.D.toFixed(2), x: +ev.x.toFixed(1), y: +ev.y.toFixed(1), s: +ev.s.toFixed(2), pk: +p.pk.toFixed(2), best: ev.best, cx: mc ? mc.x : null, cy: mc ? mc.y : null, bw: any ? x1 - x0 : 0, bh: any ? y1 - y0 : 0, vx: ev.vx || 0, glint: !!ev.glint };
   }
   window.__T = {
-    ROUNDS, S, save: () => save,
+    ROUNDS, S, save: () => save, bigAt,
     start(i, pro) { startRound(i || 0, pro); return this.state(); }, proUnlocked, sparkleOn: () => sparkleOn(),
     sunset() { startSunset(); return this.state(); },
     daily(key) { startDaily(key); return this.state(); }, dailyConfig, STYLES, GOALS_N, proGoals, DAILY_REQ, goalsState() { return { goals: S.goals.map((G, i) => ({ t: G.t, prog: S.gprog[i], done: S.gdone[i] })), key: S.gkey, new: S.goalsNew.slice(), tags: Object.assign({}, S.tagCount), encoreNext: S.encoreNext && Object.assign({}, S.encoreNext), chainBest: S.chainBest, req: S.req && { t: S.req.t, tag: S.req.tag, n: S.reqN, done: S.reqDone } }; }, landmarkBox, landmarkIn, medalCount, rankOf, sunsetRank, spawnEncoreNow() { spawnEncore(); }, todayKey, dailyPar, dailyMedal, ASSIGN, assignState() { return { t: S.assign && S.assign.t, done: S.assignDone, n: S.assignN }; },
@@ -1706,13 +1796,13 @@
       if (o.seed) this.seed(o.seed);
       S.noPause = true; save.tut = true;
       if (o.sunset) startSunset(); else if (o.daily) startDaily(o.daily); else startRound(i, o.pro);
-      let guard = 0, shots = []; const tgt0 = S.R.target || 0;
+      let guard = 0, shots = [], minFilm30 = 99; const tgt0 = S.R.target || 0, t0 = S.t;
       while (S.screen === 'play' && guard < 60 * 60 * 6) {
-        guard++; simStep(STEP);
+        guard++; simStep(STEP); if (S.sightN <= 30 && S.phase === 'play') minFilm30 = Math.min(minFilm30, S.film);
         const ev = S.ev;
         if (ev && ev.state === 'up' && S.film > 0 && S.phase !== 'ending') {
           const info = evInfo();
-          if (info && info.pk >= aim && !ev.botShot && info.cx !== null) {
+          if (info && info.pk >= (ev.kind === 'tail' ? Math.min(aim, 0.9) : aim) && !ev.botShot && info.cx !== null) {
             ev.botShot = true; S.lastSnap = null; // one shot per sighting; the double-tap guard is for fingers, not the bot
             const nx = (rand() + rand() + rand() - 1.5) * 2 * noise, ny = (rand() + rand() + rand() - 1.5) * 2 * noise;
             if (snap(info.cx + nx, info.cy + ny)) { processSnaps(); const ph = S.photos[S.photos.length - 1]; shots.push(ph.stars + ':' + ph.score); }
@@ -1720,7 +1810,7 @@
         }
         if (S.phase === 'done') break;
       }
-      const out = { round: i, tags: Object.assign({}, S.tagCount), chain: S.chainBest, goals: S.gdone.map(v => v ? 1 : 0).join(''), score: S.score, target: o.sunset || o.daily ? 0 : tgt0, film: S.film, sights: S.sights.map(s => s.status[0]).join(''), shots: shots.join(' '), sec: +S.t.toFixed(0) };
+      const out = { round: i, tags: Object.assign({}, S.tagCount), chain: S.chainBest, goals: S.gdone.map(v => v ? 1 : 0).join(''), score: S.score, target: o.sunset || o.daily ? 0 : tgt0, film: S.film, sights: S.sights.map(s => s.status[0]).join(''), shots: shots.join(' '), sec: +(S.t - t0).toFixed(0), sightN: S.sightN, minFilm30 };
       S.noPause = false; S.headless = wasH; return out;
     },
   };

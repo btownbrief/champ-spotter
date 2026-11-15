@@ -115,6 +115,8 @@
       this.noise(0.5 + 0.3 * size, 0.1 * size, 600, 'lowpass', 0.02);
       if (size > 1.2) { this.tone(150, 0.35, 'triangle', 0.22, 85); this.tone(300, 0.2, 'sine', 0.08, 170); } // big splash, pitched for phone speakers
     },
+    plop() { this.tone(620, 0.12, 'sine', 0.13, 190); this.noise(0.16, 0.07, 1800, 'bandpass', 0.02, 600, 1.2); }, // he ducks under after a good photo
+    film() { this.tone(1320, 0.06, 'triangle', 0.08); this.tone(1760, 0.09, 'triangle', 0.07, null, 0.06); }, // a frame lands back in the camera
     ripple() { this.tone(210, 0.5, 'sine', 0.05, 330); this.tone(340, 0.35, 'sine', 0.03, 480, 0.12); },
     whoosh() { this.noise(0.5, 0.18, 400, 'bandpass', 0, 2400, 1.5); },
     decoy(kind) {

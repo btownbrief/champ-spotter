@@ -116,14 +116,15 @@
     const rf = mk(W * k, HY * k), rc = rf.getContext('2d');
     rc.translate(0, HY * k); rc.scale(1, -1); rc.drawImage(bg, 0, 0, W * k, HY * k, 0, 0, W * k, HY * k);
     rc.setTransform(1, 0, 0, 1, 0, 0); rc.globalCompositeOperation = 'destination-in';
-    g = rc.createLinearGradient(0, 0, 0, HY * k * 0.6); g.addColorStop(0, 'rgba(0,0,0,0.42)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    g = rc.createLinearGradient(0, 0, 0, HY * k * 0.6); g.addColorStop(0, 'rgba(0,0,0,0.21)'); g.addColorStop(1, 'rgba(0,0,0,0)');
     rc.fillStyle = g; rc.fillRect(0, 0, W * k, HY * k);
     c.drawImage(rf, 0, 0, W * k, HY * k, 0, HY, W, HY);
     // glitter path under the sun
     if (L.sun && sx > -900) {
-      g = c.createLinearGradient(0, HY, 0, H); g.addColorStop(0, L.glow + '0.45)'); g.addColorStop(1, L.glow + '0)');
-      c.save(); c.beginPath(); c.moveTo(sx - 8, HY); c.lineTo(sx + 8, HY); c.lineTo(sx + 80, H); c.lineTo(sx - 80, H); c.closePath(); c.clip();
-      c.fillStyle = g; c.fillRect(0, HY, W, H - HY); c.restore();
+      const gl = 70; // stops 70 px below the horizon: decoration stays out of the play field
+      g = c.createLinearGradient(0, HY, 0, HY + gl); g.addColorStop(0, L.glow + '0.10)'); g.addColorStop(1, L.glow + '0)');
+      c.save(); c.beginPath(); c.moveTo(sx - 8, HY); c.lineTo(sx + 8, HY); c.lineTo(sx + 22, HY + gl); c.lineTo(sx - 22, HY + gl); c.closePath(); c.clip();
+      c.fillStyle = g; c.fillRect(0, HY, W, gl); c.restore();
     }
     // horizon haze
     g = c.createLinearGradient(0, HY - 6, 0, HY + 34); g.addColorStop(0, 'rgba(255,255,255,0.28)'); g.addColorStop(1, 'rgba(255,255,255,0)');
@@ -157,9 +158,12 @@
     const r = srand(5);
     for (let i = 0; i < 26; i++) {
       const x = r() * W * 2, y = r() * (BY - HY + 60), rr = 50 + r() * 90;
-      const g = c.createRadialGradient(x, y, 0, x, y, rr); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-      c.fillStyle = g; c.fillRect(x - rr, y - rr, rr * 2, rr * 2);
-      c.fillRect(x - rr - W * 2, y - rr, rr * 2, rr * 2); c.fillRect(x - rr + W * 2, y - rr, rr * 2, rr * 2); // wrap both ways: seamless tile
+      // wrap both ways: each copy gets its own gradient centred on it, so the 2W tile is truly seamless
+      for (const dx of [-W * 2, 0, W * 2]) {
+        const cx = x + dx, g = c.createRadialGradient(cx, y, 0, cx, y, rr);
+        g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+        c.fillStyle = g; c.fillRect(cx - rr, y - rr, rr * 2, rr * 2);
+      }
     }
     // feather the top and bottom so the moving blobs never show a straight edge
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'destination-in';
@@ -280,7 +284,7 @@
     for (let i = 0; i < nsp; i++) {
       const rr = srand(i + 3)(), r2 = srand(i * 7 + 11)(), f = Math.pow(r2, 1.4);
       const y = HY + 6 + f * (H - HY - 6);
-      let x = rr * W; if (i % 3 === 0) x = sx + (rr - 0.5) * (30 + 220 * f);
+      let x = rr * W; if (i % 3 === 0 && f < 0.12) x = sx + (rr - 0.5) * (30 + 220 * f);
       const tw = Math.sin(t * (1.5 + (i % 5) * 0.6) + i * 1.9), a = clamp(tw, 0, 1) * (0.4 + 0.5 * f);
       if (a < 0.05) continue;
       ctx.fillStyle = 'rgba(' + L.shim + ',' + a.toFixed(2) + ')';
@@ -299,9 +303,15 @@
     g.addColorStop(1, 'rgba(235,242,246,' + (0.14 * amount).toFixed(3) + ')');
     ctx.fillStyle = g; ctx.fillRect(0, HY - 70, W, G.H);
     ctx.globalAlpha = clamp(amount * 0.9, 0, 1);
-    const off = (t * 5) % (W * 2), h = BY - HY + 60;
+    const kk = G.k || 1, off = Math.round(((t * 5) % (W * 2)) * kk) / kk, h = BY - HY + 60; // whole device pixels: the two copies meet with no hairline
     ctx.drawImage(f, -off, HY - 20, W * 2, h); if (off > W) ctx.drawImage(f, W * 2 - off, HY - 20, W * 2, h);
     ctx.restore();
+  }
+  function fogCover(amount, y) {
+    if (amount <= 0.01) return 0;
+    const t = clamp((y - (G.HY - 70)) / (G.BY - G.HY + 70), 0, 1);
+    const g = t < 0.16 ? lerp(0, 0.88, t / 0.16) : t < 0.62 ? lerp(0.88, 0.42, (t - 0.16) / 0.46) : lerp(0.42, 0.14, (t - 0.62) / 0.38);
+    return 1 - (1 - g * amount) * (1 - 0.4 * amount);
   }
   const fogAt = (amount, y) => amount * (0.14 + 0.74 * (1 - clamp((y - G.HY) / (G.BY - G.HY), 0, 1)));
 
@@ -400,14 +410,16 @@
   const FK = { out: '#2e2218', mid: '#6a5136', hi: '#a08560', dome: '#6f553a', spot: '#4c3a26', under: 'rgba(30,20,8,0.3)', belly: '#8a7254', fin: '#563f2a', domeHi: '#947a56', scallop: '#3d2d1d' };
   // the rare Golden Champ
   const CCG = { out: '#7a4806', mid: '#e6ae2c', hi: '#ffe48a', dome: '#efbb38', spot: '#fff4c4', under: 'rgba(130,85,10,0.32)', belly: '#fff0c4', fin: '#cf951c', domeHi: '#ffd65c', scallop: '#b07612' };
+  const CCN = {}; Object.keys(CC).forEach(k => { CCN[k] = CC[k][0] === '#' && k !== 'out' ? shade(CC[k], 0.15) : CC[k]; }); // night and dusk: 15% lighter body, outline stays dark
   function ell(ctx, x, y, rx, ry, rot) { ctx.beginPath(); ctx.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot || 0, 0, TAU); ctx.fill(); }
   function drawChamp(ctx, ch) {
-    const P = ch.fake ? FK : ch.gold ? CCG : CC;
-    // ch: {pose, x, y, s, dir, wl, tt, ghost}
+    const P = ch.fake ? FK : ch.gold ? CCG : ch.rim ? CCN : CC;
+    // ch: {pose, x, y, s, dir, wl, tt, ghost, rim (night light), aboveOnly (redraw over fog)}
     const p = ch.pose, s = ch.s, d = ch.dir, wl = ch.wl;
     const E = p.els.map(q => ({ x: ch.x + d * s * q.x, y: ch.y + s * q.y, rx: s * q.rx, ry: s * q.ry, rot: q.rot ? (d < 0 ? Math.PI - q.rot : q.rot) : 0, part: q.part, e: q.e }));
     const W = G.W, H = G.H, ol = 1.5 * s + 0.4;
     // underwater ghost
+    if (!ch.aboveOnly) {
     ctx.save(); ctx.beginPath(); ctx.rect(-50, wl, W + 100, H); ctx.clip();
     ctx.fillStyle = P.under;
     E.forEach(q => ell(ctx, q.x, q.y, q.rx + 1, q.ry + 1, q.rot));
@@ -425,8 +437,10 @@
       ctx.restore();
     }
     ctx.restore();
+    }
     // above the water
     ctx.save(); ctx.beginPath(); ctx.rect(-50, -50, W + 100, wl + 50); ctx.clip();
+    if (ch.rim) { ctx.fillStyle = 'rgba(217,255,240,0.85)'; E.forEach(q => ell(ctx, q.x, q.y - 1.5, q.rx + ol, q.ry + ol, q.rot)); } // moonlight on his top edge
     ctx.fillStyle = P.out; E.forEach(q => ell(ctx, q.x, q.y, q.rx + ol, q.ry + ol, q.rot));
     const imgH = asset('champ_hump');
     E.forEach(q => {
@@ -453,6 +467,7 @@
     });
     if (p.head) drawHead(ctx, p.head, ch);
     ctx.restore();
+    if (ch.aboveOnly) return E;
     // foam collar where the body meets the surface
     const iv = [];
     E.forEach(q => {
@@ -473,7 +488,7 @@
     return E;
   }
   function drawHead(ctx, h, ch) {
-    const P = ch.fake ? FK : ch.gold ? CCG : CC;
+    const P = ch.fake ? FK : ch.gold ? CCG : ch.rim ? CCN : CC;
     const s = ch.s, d = ch.dir;
     ctx.save();
     ctx.translate(ch.x + d * s * h.x - 0, ch.y + s * h.y);
@@ -704,6 +719,6 @@
 
   window.Art = {
     LIGHTS, ASSETS, loadAssets, asset, G, setup, depthScale, srand, clamp, lerp, sm,
-    scene, drawScene, ferryX, lightX, drawFog, drawReeds, fogAt, board, pose, drawChamp, drawDecoy, decoyBox, drawSailboat, drawTourist, thumb, mk, shade, wake,
+    scene, drawScene, ferryX, lightX, drawFog, fogTexture, drawReeds, fogAt, fogCover, board, pose, drawChamp, drawDecoy, decoyBox, drawSailboat, drawTourist, thumb, mk, shade, wake,
   };
 })();

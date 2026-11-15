@@ -35,6 +35,7 @@
     padding: calc(var(--u) * 5) calc(var(--u) * 10) calc(var(--u) * 5) calc(var(--u) * 8); font-size: calc(var(--u) * 20); font-weight: 700; line-height: 1;
     backdrop-filter: blur(calc(var(--u) * 4)); -webkit-backdrop-filter: blur(calc(var(--u) * 4)); }
   .chip svg { width: calc(var(--u) * 22); height: calc(var(--u) * 22); fill: var(--yel); }
+  .chip.bump { animation: bump .45s cubic-bezier(.2,1.8,.4,1); }
   .chip.low { border-color: var(--red); } .chip.low b { color: #ff8b80; animation: blink .7s steps(2) infinite; }
   @keyframes blink { 50% { opacity: .45; } }
   #hudC { flex: 1; min-width: 0; padding-top: calc(var(--u) * 2); }
@@ -50,13 +51,17 @@
   .pip.missed { background: rgba(120,130,140,.6); border-color: rgba(200,210,220,.5); position: relative; }
   .pip.missed::after { content: ''; position: absolute; left: 20%; right: 20%; top: calc(50% - var(--u) * .8); height: calc(var(--u) * 1.6); background: rgba(255,255,255,.7); transform: rotate(45deg); }
   .pip.live { border-color: #fff; animation: pipPulse 1s ease-in-out infinite; }
+  .pip { flex: none; }
+  /* long rolls (14+ sightings): smaller round dots instead of squashed ovals */
+  #pips.many { gap: calc(var(--u) * 3); }
+  #pips.many .pip { width: calc(var(--u) * 7); height: calc(var(--u) * 7); border-width: calc(var(--u) * 1.4); }
   @keyframes pipPulse { 50% { transform: scale(1.35); } }
   #assign { position: absolute; left: 50%; transform: translateX(-50%); top: calc(var(--u) * 74 + var(--inset-top, 0px)); max-width: 92%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     font-weight: 600; font-size: calc(var(--u) * 12); line-height: 1; color: #2b2118; background: rgba(255,250,236,.88); border-radius: calc(var(--u) * 4); padding: calc(var(--u) * 4) calc(var(--u) * 8);
     box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 5) rgba(0,15,25,.3); transition: background .3s; }
   #assign.done { background: linear-gradient(180deg, #ffe58a, #f6b81f); color: #5a3a00; font-weight: 700; }
-  #streak { position: absolute; left: calc(var(--u) * 8); top: calc(var(--u) * 98 + var(--inset-top, 0px)); font-weight: 700; font-size: calc(var(--u) * 14); line-height: 1; color: #fff;
-    background: linear-gradient(180deg, #ffb24a, #ef6a2b); border: calc(var(--u) * 1.5) solid #fff1d0; border-radius: calc(var(--u) * 12); padding: calc(var(--u) * 4) calc(var(--u) * 9) calc(var(--u) * 3);
+  #streak { position: absolute; left: calc(var(--u) * 8); top: calc(var(--u) * 80 + var(--inset-top, 0px)); font-weight: 700; font-size: calc(var(--u) * 11.2); line-height: 1; color: #fff;
+    background: linear-gradient(180deg, #ffb24a, #ef6a2b); border: calc(var(--u) * 1.5) solid #fff1d0; border-radius: calc(var(--u) * 12); padding: calc(var(--u) * 3.2) calc(var(--u) * 7.2) calc(var(--u) * 2.4);
     box-shadow: 0 calc(var(--u) * 2) 0 #a8401a, 0 calc(var(--u) * 4) calc(var(--u) * 8) rgba(40,10,0,.35); text-shadow: 0 calc(var(--u) * 1) 0 rgba(120,40,0,.6);
     opacity: 0; transform: scale(.6); transform-origin: left center; transition: opacity .2s, transform .25s cubic-bezier(.2,1.6,.4,1); }
   #streak b { font-family: 'Bowlby One', sans-serif; font-weight: 400; color: #fff6c8; margin-left: calc(var(--u) * 3); }
@@ -117,7 +122,10 @@
   .starrow .on { color: var(--yel); animation: pop2 .5s cubic-bezier(.2,1.8,.4,1) both; display: inline-block; }
   @keyframes pop2 { from { transform: scale(0) rotate(-40deg); } to { transform: scale(1); } }
   .footrow { display: flex; justify-content: center; gap: calc(var(--u) * 10); margin-top: calc(var(--u) * 16); }
-  #title .footrow .btn { min-width: 0; }
+  #titleSnd { position: absolute; top: calc(var(--u) * 12 + var(--inset-top, 0px)); right: calc(var(--u) * 12); display: flex; gap: calc(var(--u) * 8); }
+  #titleSnd .x { display: none; }
+  #titleSnd .round.off .x { display: inline; }
+  #titleSnd .round.off .wv { display: none; }
   .lock { opacity: .85; }
 
   /* round tiles */
@@ -198,10 +206,18 @@
   body.compact .screen { padding-top: calc(var(--u) * 10 + var(--inset-top, 0px)); padding-bottom: calc(var(--u) * 12 + var(--inset-bot, 0px)); }
   body.compact .starrow { font-size: calc(var(--u) * 28); margin: 0 0 calc(var(--u) * 4); } body.compact h2.disp { font-size: calc(var(--u) * 26); }
   body.compact #roundsGrid { grid-template-columns: repeat(4, 1fr); } body.compact #grid { grid-template-columns: repeat(5, 1fr); } body.compact #guide { grid-template-columns: repeat(6, 1fr); }
-  body.compact #title .footrow, body.compact #dailyNote { display: none; }
+  body.compact #dailyNote { display: none; }
   body.short #result h2.disp { font-size: calc(var(--u) * 28); } body.short #result .starrow { font-size: calc(var(--u) * 30); margin: 0; }
   body.short #result .btn.big { font-size: calc(var(--u) * 26); padding: calc(var(--u) * 8) calc(var(--u) * 26); } body.short #result .row { margin-top: calc(var(--u) * 8); }
-  #result .pc { width: calc(var(--u) * 68); }
+  #result .pc { width: calc(var(--u) * 68); } #result .pc.big { width: calc(var(--u) * 78); }
+  /* result screen = title, stars, score, photos, one badge, one line. The star legend and the mastery list stay in the DOM but off screen. */
+  #rsWhy, #rsGoalsH, #rsGoals { display: none !important; }
+  #result #sheet { align-items: center; margin: calc(var(--u) * 10) 0 calc(var(--u) * 6); }
+  #result .stat { font-size: calc(var(--u) * 18); }
+  #rsBonus { margin: calc(var(--u) * 4) 0 0; font-size: calc(var(--u) * 13); color: #cfeeea; font-weight: 600; max-width: 94%; }
+  #result #rsBadges:empty { display: none; }
+  #result .row .btn.alt { font-size: calc(var(--u) * 16); padding: calc(var(--u) * 7) calc(var(--u) * 14); }
+  #result .row:last-child { gap: calc(var(--u) * 8); flex-wrap: nowrap; }
   body.short #result .pc { width: calc(var(--u) * 66); } body.short #result .badge { font-size: calc(var(--u) * 13); margin: calc(var(--u) * 3) 0; }
 
   /* mastery: goals list, medals, Shot Book */
@@ -260,7 +276,7 @@
       </div>
       <div class="small" id="dailyNote" style="margin-top:0"></div>
     </div>
-    <div class="footrow"><button class="btn alt" id="btnSfx">SOUND ON</button><button class="btn alt" id="btnMus">MUSIC ON</button></div>
+    <div id="titleSnd"><button class="round" id="btnSfx" aria-label="Sound on" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3z" stroke="none"/><path class="wv" d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2" stroke-linecap="round"/><path class="x" d="M4 4l16 16" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></button><button class="round" id="btnMus" aria-label="Music on" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M9 17.5V6l10-2v11.5" fill="none" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="17.5" r="2.7" stroke="none"/><circle cx="16.5" cy="15.5" r="2.7" stroke="none"/><path class="x" d="M4 4l16 16" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
   </section>
 
   <section id="rounds" class="screen shade">
@@ -278,9 +294,9 @@
     <div class="small" id="rsWhy" style="margin:calc(var(--u)*-6) 0 calc(var(--u)*8)"></div>
     <div id="rsGoalsH"></div><div id="rsGoals"></div>
     <div class="stat">Score <b id="rsScore">0</b> <span id="rsTgt"></span></div>
-    <div class="small" id="rsBonus" style="margin-top:0"></div>
     <div id="sheet"></div>
     <div id="rsBadges"></div>
+    <div class="small" id="rsBonus"></div>
     <div class="row">
       <button class="btn big" id="rsNext">NEXT ROUND</button>
     </div>
@@ -309,6 +325,7 @@
   <section id="pause" class="screen shade">
     <h2 class="disp">PAUSED</h2>
     <div class="sub" id="pauseSub"></div>
+    <div class="small" id="pauseJob" style="margin:calc(var(--u)*-4) 0 calc(var(--u)*16);font-size:calc(var(--u)*14);color:#fff1c4"></div>
     <div class="stack">
       <button class="btn big" id="pResume">RESUME</button>
       <div class="row" style="margin-top:0"><button class="btn alt" id="pSfx">SOUND ON</button><button class="btn alt" id="pMus">MUSIC ON</button></div>
