@@ -1,6 +1,6 @@
 {
-  "name": "Champ Spotter",
-  "short_name": "Champ Spotter",
+  "name": "Champ Cam",
+  "short_name": "Champ Cam",
   "description": "A tap-to-snap photo safari. Catch the lake monster on camera before the film runs out.",
   "start_url": "./index.html",
   "display": "standalone",
